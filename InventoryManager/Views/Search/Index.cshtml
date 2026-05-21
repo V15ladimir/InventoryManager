@@ -1,0 +1,48 @@
+﻿@using InventoryManager.Models.ViewModels.Search
+@model SearchData
+@{
+    ViewData["Title"] = $"Search: {Model.Query}";
+}
+
+<div class="container">
+    <h3>Search results for "@Model.Query"</h3>
+    <p class="text-muted">@Model.TotalCount result(s)</p>
+
+    @if (Model.TotalCount == 0)
+    {
+        <div class="alert alert-warning">No results found.</div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Details</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inventory in Model.Inventories)
+                {
+                    <tr onclick="window.location.href='@Url.Action("Details", "Inventories", new { inventory.InventoryId })'" style="cursor:pointer">
+                        <td><span class="badge bg-secondary">Inventory</span></td>
+                        <td><strong>@inventory.Name</strong></td>
+                        <td class="text-muted">@(inventory.Description ?? "—")</td>
+                        <td>@inventory.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+                @foreach (var item in Model.Items)
+                {
+                    <tr onclick="window.location='/Items/Details/@item.Id'" style="cursor:pointer">
+                        <td><span class="badge bg-info">Item</span></td>
+                        @* <td><strong>@item.Name</strong></td> *@
+                        <td class="text-muted">@item.CustomId in @item.InventoryName</td>
+                        <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,0 +1,106 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Shared
+@model InventoryAccessListViewModel
+@{
+    ViewData["Title"] = "Access";
+}
+
+<div class="container-fluid mt-2">   
+    <form method="get" asp-controller="Inventories" asp-action="SearchAccess">
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-12 col-sm">
+                <h3 class="mb-0">@ViewData["Title"]</h3>
+            </div>
+            <div class="col-12 col-sm-auto">
+                <input type="hidden" name="inventoryId" value="@Model.InventoryId" />
+                <input type="hidden" name="pageIndex" value="@Model.AccessList.PageIndex" />
+                <input type="hidden" name="pageSize" value="@Model.AccessList.PageSize" />
+                <input type="hidden" name="sortBy" value="@Model.AccessList.SortBy" />
+                <input type="hidden" name="sortOrder" value="@Model.AccessList.SortOrder" />
+                <div class="input-group input-group-sm">
+                    <input type="text" name="searchText" class="form-control" 
+                        value="@Model.AccessList.SearchText" placeholder="Filter..." />
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">Access</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(int i = 0; i < Model.AccessList.Elements.Count; i++) {
+                    <tr>
+                        <td class="text-center">
+                            <form method="post" asp-controller="Inventories" asp-action="UpdateAccess">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="InventoryId" value="@Model.InventoryId" />
+                                <input type="hidden" name="pageIndex" value="@Model.AccessList.PageIndex" />
+                                <input type="hidden" name="pageSize" value="@Model.AccessList.PageSize" />
+                                <input type="hidden" name="searchText" value="@Model.AccessList.SearchText" />
+                                <input type="hidden" name="sortBy" value="@Model.AccessList.SortBy" />
+                                <input type="hidden" name="sortOrder" value="@Model.AccessList.SortOrder" />
+                                <input type="hidden" name="inventoryId" value="@Model.InventoryId" />
+                                <input type="hidden" name="userId" value="@Model.AccessList.Elements[i].UserId" />
+                                <input type="checkbox" name="hasAccess" onchange="this.form.submit()"
+                                    value="true" @(Model.AccessList.Elements[i].HasAccess ? "checked" : "") />
+                            </form>
+                        </td>
+                        <td>@Model.AccessList.Elements[i].UserName</td>
+                        <td>@Model.AccessList.Elements[i].Email</td>
+                        <td>@Model.AccessList.Elements[i].CreatedAt</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if(Model.AccessList.TotalPages > 1) {
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <form method="get" asp-action="SearchAccess" asp-controller="Inventories" class="d-flex gap-2">
+                <input type="hidden" name="inventoryId" value="@Model.InventoryId" />
+                <input type="hidden" name="Page" value="1" />
+                <input type="hidden" name="SearchText" value="@Model.AccessList.SearchText" />
+            
+                <div class="d-flex align-items-center gap-2">
+                    <select name="PageSize" class="form-select form-select-sm" style="width: 70px;" onchange="this.form.submit()">
+                        <option value="10" selected="@(Model.AccessList.PageSize == 10)">10</option>
+                        <option value="20" selected="@(Model.AccessList.PageSize == 20)">20</option>
+                        <option value="50" selected="@(Model.AccessList.PageSize == 50)">50</option>
+                        <option value="100" selected="@(Model.AccessList.PageSize == 100)">100</option>
+                    </select>
+                </div>
+            </form>
+            <div class="d-flex gap-2 align-items-center">
+                <a class="btn btn-sm btn-outline-secondary @(Model.AccessList.PageIndex == 1 ? "disabled" : "")"
+                    asp-controller="Inventories"
+                    asp-action="SearchAccess"
+                    asp-route-inventoryId="@Model.InventoryId"
+                    asp-route-Page="@(Model.AccessList.PageIndex - 1)"
+                    asp-route-PageSize="@Model.AccessList.PageSize"
+                    asp-route-SearchText="@Model.AccessList.SearchText">
+                    <b>&lt;</b>
+                </a>
+                <span class="px-2">
+                    <strong>@Model.AccessList.PageIndex</strong> / @Model.AccessList.TotalPages
+                </span>
+                <a class="btn btn-sm btn-outline-secondary @(Model.AccessList.PageIndex == Model.AccessList.TotalPages ? "disabled" : "")"
+                    asp-controller="Inventories"
+                    asp-action="SearchAccess"
+                    asp-route-inventoryId="@Model.InventoryId"
+                    asp-route-Page="@(Model.AccessList.PageIndex + 1)"
+                    asp-route-PageSize="@Model.AccessList.PageSize"
+                    asp-route-SearchText="@Model.AccessList.SearchText">
+                    <b>&gt;</b>
+                </a>
+            </div>
+        </div>
+    }
+</div>

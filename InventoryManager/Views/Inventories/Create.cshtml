@@ -1,0 +1,7 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Form
+@model InventorySettingsViewModel
+@{
+    ViewData["Title"] = "Create inventory";
+}
+<h3>@ViewData["Title"]</h3>
+@await Html.PartialAsync("_InventorySettings", Model, new ViewDataDictionary(ViewData) { { "InventoryId", 0 } })

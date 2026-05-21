@@ -1,0 +1,35 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Shared
+@model InventoryCustomFieldsViewModel
+@{
+    var inventoryId = ViewData["InventoryId"];
+}
+
+<form id="customFieldsForm" method="post" asp-action="UpdateCustomFields" asp-controller="Inventories">
+    @Html.AntiForgeryToken()
+    <div class="mt-2">
+        <input type="hidden" name="InventoryId" value="@inventoryId" />
+        <div id="fieldsContainer">
+            <span id="fieldsSaveIndicator" class="badge bg-secondary">Autosave enabled</span>
+            @if(Model != null && Model.CustomFields.Any()) {
+                @foreach(var field in Model.CustomFields.OrderBy(x => x.Order)) {
+                    @await Html.PartialAsync("_CustomField", field)
+                }
+            }
+        </div>
+        <div class="mt-2">
+            <button type="button" class="btn btn-primary" onclick="saveFields()" id="manualSaveBtn">
+                Save
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Add element</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="addField(0)">Single-line text</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addField(1)">Multi-line text</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addField(2)">Number</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addField(3)">Link</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addField(4)">Checkbox</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>

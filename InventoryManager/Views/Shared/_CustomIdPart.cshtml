@@ -1,0 +1,126 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Form
+@using InventoryManager.Models.Enums
+@model InventoryIdPartViewModel
+
+<div class="card mt-2 part-item" data-order="@Model.Order">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <strong class="drag-handle" style="cursor:grab">
+                <i class="bi bi-grip-vertical"></i>
+                @GetTypeName(Model.Type)
+            </strong>
+            <button type="button" class="btn-close" onclick="removePart(this)"></button>
+        </div>
+        <input type="hidden" name="CustomIdParts[@Model.Order].Id" value="@Model.Id" />
+        <input type="hidden" name="CustomIdParts[@Model.Order].Order" value="@Model.Order" />
+        @switch (Model.Type)
+        {
+            case IdType.FixedText:
+                <div class="row">
+                    <div class="col-md-4">
+                        <input name="CustomIdParts[@Model.Order].Text" 
+                               class="form-control" 
+                               placeholder="Text" 
+                               value="@Model.Text" 
+                               oninput="scheduleAutoSave(); schedulePreview();" />
+                        <span asp-validation-for="@Model.Text" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <small class="text-muted d-block mt-1">Any text. Example: <code>INV-</code>, <code>_</code>, <code>/</code></small>
+                    </div>
+                </div>
+                break;
+            case IdType.Random20bit:
+            case IdType.Random32bit:
+            case IdType.Random6:
+            case IdType.Random9:
+                <div class="row">
+                    <div class="col-md-4">
+                        <input name="CustomIdParts[@Model.Order].NumberWidth" 
+                               class="form-control" 
+                               type="number" 
+                               value="@Model.NumberWidth" 
+                               min="0" 
+                               max="20" 
+                               oninput="scheduleAutoSave(); schedulePreview();" 
+                               placeholder="Width" />
+                        <span asp-validation-for="@Model.NumberWidth" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <small class="text-muted d-block mt-1">Number of digits with leading zeros. Example: value <code>123</code> with width <code>5</code> = <code>00123</code></small>
+                    </div>
+                </div>
+                break;
+            case IdType.Guid:
+                <div class="row">
+                    <div class="col-md-4">
+                        <select name="CustomIdParts[@Model.Order].Format" 
+                                class="form-select" 
+                                onchange="scheduleAutoSave(); updatePreview();">
+                            <option value="N" selected="@(Model.Format == "N")">N: compact</option>
+                            <option value="D" selected="@(Model.Format == "D")">D: with hyphens</option>
+                        </select>
+                        <span asp-validation-for="@Model.Format" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <small class="text-muted d-block mt-1">Format: <code>N</code> = compact, <code>D</code> = with hyphens</small>
+                    </div>
+                </div>
+                break;
+            case IdType.DateTime:
+                <div class="row">
+                    <div class="col-md-4">
+                        <select name="CustomIdParts[@Model.Order].Format" 
+                                class="form-select" 
+                                onchange="scheduleAutoSave(); updatePreview();">
+                            <option value="yyyy" selected="@(Model.Format == "yyyy")">yyyy</option>
+                            <option value="yyyyMMdd" selected="@(Model.Format == "yyyyMMdd")">yyyyMMdd</option>
+                            <option value="yyyy-MM-dd" selected="@(Model.Format == "yyyy-MM-dd")">yyyy-MM-dd</option>
+                            <option value="dd.MM.yyyy" selected="@(Model.Format == "dd.MM.yyyy")">dd.MM.yyyy</option>
+                        </select>
+                        <span asp-validation-for="@Model.Format" class="text-danger"></span>
+                    </div>
+                     <div class="col-md-8">
+                        <small class="text-muted d-block mt-1">Format: <code>yyyy</code>=year, <code>MM</code>=month, <code>dd</code>=day</small>
+                    </div>
+                </div>
+                break;
+            case IdType.Sequence:
+                <div class="row">
+                    <div class="col-md-4">
+                        <input name="CustomIdParts[@Model.Order].NumberWidth" 
+                               class="form-control" 
+                               type="number" 
+                               value="@Model.NumberWidth" 
+                               min="0" 
+                               max="20" 
+                               oninput="scheduleAutoSave(); schedulePreview();" 
+                               placeholder="Width" />
+                        <span asp-validation-for="@Model.NumberWidth" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <small class="text-muted">+1 to last value (starts from 1)</small>
+                    </div>
+                </div>
+                break;
+        }
+        <input type="hidden" name="CustomIdParts[@Model.Order].Type" value="@((int)Model.Type)">
+    </div>
+</div>
+@functions {
+    string GetTypeName(IdType type)
+    {
+        return type switch
+        {
+            IdType.FixedText => "Fixed Text",
+            IdType.Random20bit => "Random 20bit",
+            IdType.Random32bit => "Random 32bit",
+            IdType.Random6 => "Random 6-digit",
+            IdType.Random9 => "Random 9-digit",
+            IdType.Guid => "GUID",
+            IdType.DateTime => "DateTime",
+            IdType.Sequence => "Sequence",
+            _ => "Unknown"
+        };
+    }
+}

@@ -1,0 +1,237 @@
+﻿@using InventoryManager.Models.Enums
+@using InventoryManager.Models.ViewModels
+@using InventoryManager.Models.ViewModels.Inventories
+@using InventoryManager.Models.ViewModels.Inventories.Index
+@using InventoryManager.Models.Entitites.Inventories
+@using InventoryManager.Utilities.Pagination
+@model InventoriesIndexViewModel
+@{
+    ViewData["Title"] = Model.ViewType switch {
+        ViewType.My => "My Inventories",
+        ViewType.Shared => "Shared Inventories",
+        _ => "All Inventories"
+    };
+}
+
+<div class="container-fluid">
+    <form method="get" asp-action="Index" id="paginationForm">
+        <input type="hidden" name="viewType" value="@Model.ViewType" />
+        <input type="hidden" name="page" value="@Model.Inventories.PageIndex" />
+        <input type="hidden" name="pageSize" value="@Model.Inventories.PageSize" />
+        <input type="hidden" name="sortBy" value="@Model.Inventories.SortBy" />
+        <input type="hidden" name="sortOrder" value="@Model.Inventories.SortOrder" />
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-12 col-sm">
+                <h3 class="mb-0">@ViewData["Title"]</h3>
+            </div>
+            @if(User.Identity?.IsAuthenticated ?? false) { 
+                <div class="col-12 col-sm-auto">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-secondary" onclick="createInventory()">
+                            Create
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="deleteInventory()">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+            <div class="col-12 col-sm-auto">
+                <div class="input-group">
+                    <input type="text" name="searchText" class="form-control border-secondary" value="@Model.Inventories.SearchText" placeholder="Filter..." />
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-action="Create" id="createForm"></form>
+    <form method="post" asp-action="Delete" id="deleteForm"></form>
+    <div class="table-responsive">
+        @{
+            var inventorySortBy = Model.Inventories.SortBy;
+            var inventorySortOrder = Model.Inventories.SortOrder;
+            string ChangeSortOrder(string sortBy) => inventorySortBy == sortBy && inventorySortOrder == "asc" ? "desc" : "asc";
+            string GetSortIcon(string sortBy) => inventorySortBy == sortBy ?
+                (inventorySortOrder == "asc" ? "bi bi-chevron-up" : "bi bi-chevron-down") :
+                "bi bi-chevron-expand";
+        }
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">
+                        <input type="checkbox" class="form-check-input" id="selectAll">
+                    </th>
+                    <th>
+                        <button type="button" onclick="sort('name', '@(ChangeSortOrder("name"))')" class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold">
+                            Name
+                            <i class="@(GetSortIcon("name"))"></i>
+                        </button>
+                    </th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>
+                        <button type="button" 
+                            onclick="sort('created', '@(ChangeSortOrder("created"))')" 
+                            class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold">
+                            Created
+                            <i class="@(GetSortIcon("created"))"></i>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" 
+                            onclick="sort('updated', '@(ChangeSortOrder("updated"))')" 
+                            class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold">
+                            Updated
+                            <i class="@(GetSortIcon("updated"))"></i>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Inventories.Elements.Any()) {
+                    @foreach(var inventory in Model.Inventories.Elements) {
+                        <tr>
+                            <td onclick="event.stopPropagation()">
+                                <input type="checkbox" class="form-check-input item-select" value="@inventory.Basic.Id">
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details", new { inventoryId = inventory.Basic.Id })">
+                                    @inventory.Basic.Name
+                                </a>
+                            </td>
+                            <td>@inventory.Basic.Description</td>
+                            <td>@inventory.Category.CategoryName</td>
+                            <td>@(inventory.Status.IsPublic ? "Public" : "Private")</td>
+                            <td>@inventory.Audit.CreatedBy</td>
+                            <td>@inventory.Audit.CreatedAt</td>
+                            <td>@inventory.Audit.UpdatedAt</td>
+                        </tr>
+                    }
+                } else {
+                    <tr>
+                        <td colspan="@(Model.Inventories.Elements.Count())" class="text-center">
+                            No data available
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+            <select id="pageSizeSelect" class="form-select border-secondary" style="width: 70px;" onchange="changeInventoryPageSize(this.value)">
+                <option value="10" selected="@(Model.Inventories.PageSize == 10)">10</option>
+                <option value="20" selected="@(Model.Inventories.PageSize == 20)">20</option>
+                <option value="50" selected="@(Model.Inventories.PageSize == 50)">50</option>
+                <option value="100" selected="@(Model.Inventories.PageSize == 100)">100</option>
+            </select>
+        </div>
+        @if(Model.Inventories.TotalPages > 1) {
+            <div class="d-flex gap-2 align-items-center">
+                <button 
+                    type="button"
+                    class="btn btn-secondary @(Model.Inventories.PageIndex == 1 ? "disabled" : "")"
+                    onclick="goToPage('@(Model.Inventories.PageIndex - 1)')">
+                    <b>&lt;</b>
+                </button>
+                <span class="px-2">
+                    <strong>@Model.Inventories.PageIndex</strong> / @Model.Inventories.TotalPages
+                </span>
+                <button 
+                    type="button" 
+                    class="btn btn-secondary @(Model.Inventories.PageIndex == Model.Inventories.TotalPages ? "disabled" : "")"
+                    onclick="goToPage('@(Model.Inventories.PageIndex + 1)')">
+                    <b>&gt;</b>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const deleteForm = document.getElementById('deleteForm');
+
+    selectAllCheckbox?.addEventListener('change', function() {
+        document.querySelectorAll('.item-select').forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    function deleteInventory() {
+        const params = getInventoryPagination();
+        const paramArray = [
+            { name: 'sortBy', value: params.sortBy },
+            { name: 'sortOrder', value: params.sortOrder },
+            { name: 'page', value: params.page },
+            { name: 'pageSize', value: params.pageSize },
+            { name: 'searchText', value: params.searchText }
+        ];
+        const form = document.getElementById('deleteForm')
+        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => cb.value);
+        if (selectedIds.length === 0) 
+            return;
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'inventoryIds';
+            input.value = id;
+            input.classList.add('inventory-id-field');
+            form.appendChild(input);
+        });
+        paramArray.forEach(param => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = param.name;
+            input.value = param.value;
+            input.classList.add('dynamic-param');
+            form.appendChild(input);
+        });
+        form.submit();
+    }
+
+    function getInventoryPagination() {
+        return {
+            sortBy: document.querySelector('input[name="sortBy"]')?.value || 'Created',
+            sortOrder: document.querySelector('input[name="sortOrder"]')?.value || 'desc',
+            page: document.querySelector('input[name="page"]')?.value || '1',
+            pageSize: document.querySelector('input[name="pageSize"]')?.value || '20',
+            searchText: document.querySelector('input[name="searchText"]')?.value || ''
+        };
+    }
+
+    function goToPage(page) {
+        const params = getInventoryPagination();
+        document.querySelector('input[name="page"]').value = page;
+        document.getElementById('paginationForm').submit();
+    }
+
+    function createInventory() {
+        const params = getInventoryPagination();
+        const url = '/Inventories/Create?' + new URLSearchParams({
+            sortBy: params.sortBy,
+            sortOrder: params.sortOrder,
+            page: params.page,
+            pageSize: params.pageSize,
+            searchText: params.searchText
+        }).toString();
+        window.location.href = url;
+    }
+
+    function changeInventoryPageSize(pageSize) {
+        document.querySelector('input[name="pageSize"]').value = pageSize;
+        document.querySelector('input[name="page"]').value = 1;
+        document.getElementById('paginationForm').submit();
+    }
+
+    function sort(sortBy, sortOrder) {
+        document.querySelector('input[name="sortBy"]').value = sortBy;
+        document.querySelector('input[name="sortOrder"]').value = sortOrder;
+        document.querySelector('input[name="page"]').value = 1;
+        document.getElementById('paginationForm').submit();
+    }
+</script>

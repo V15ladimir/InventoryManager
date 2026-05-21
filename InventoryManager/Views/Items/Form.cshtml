@@ -1,0 +1,122 @@
+﻿@using InventoryManager.Models.ViewModels.Items
+@using InventoryManager.Models.ViewModels.Items.Form
+@using InventoryManager.Models.Enums
+@model ItemFormViewModel
+@{
+    var isEdit = Model.Id > 0;
+    var title = isEdit ? "Edit Item" : "Create New Item";
+    ViewData["Title"] = title;
+}
+
+<form method="post" asp-action="@(isEdit ? "Update" : "Create")">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="InventoryId" />
+    <input type="hidden" asp-for="PagedRequest.SortBy" />
+    <input type="hidden" asp-for="PagedRequest.SortOrder" />
+    <input type="hidden" asp-for="PagedRequest.Page" />
+    <input type="hidden" asp-for="PagedRequest.PageSize" />
+    <input type="hidden" asp-for="PagedRequest.SearchText" />
+    <div class="mb-4">
+        <h3>@title</h3>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Custom ID</label>
+        <input asp-for="CustomId" class="form-control" />
+        <div class="form-text">Auto-generated, but you can edit it</div>
+    </div>
+    
+    @foreach(var field in Model.Fields) 
+    {
+        var value = Model.FieldValues.ContainsKey(field.Id) ? Model.FieldValues[field.Id] : "";
+        
+        <div class="mb-3">
+            <label class="form-label">
+                @field.Name
+                @if(field.State == FieldState.Required) 
+                {
+                    <span class="text-danger">*</span>
+                }
+            </label>
+            @switch(field.Type) 
+            {
+                case FieldType.SingleLine:
+                    <input type="text"
+                           name="FieldValues[@field.Id]"
+                           class="form-control"
+                           value="@value"
+                           @(field.State == FieldState.Required ? "required" : "") />
+                    break;
+                    @Model.FieldValues[@field.Id]
+                case FieldType.MultiLine:
+                    <textarea name="FieldValues[@field.Id]"
+                              class="form-control"
+                              rows="3"
+                              @(field.State == FieldState.Required ? "required" : "")>@value</textarea>
+                    break;
+                    
+                case FieldType.Number:
+                    <input type="number"
+                           name="FieldValues[@field.Id]"
+                           class="form-control"
+                           step="any"
+                           value="@value"
+                           @(field.State == FieldState.Required ? "required" : "") />
+                    break;
+                    
+                case FieldType.Link:
+                    <input type="url"
+                           name="FieldValues[@field.Id]"
+                           class="form-control"
+                           placeholder="https://..."
+                           value="@value"
+                           @(field.State == FieldState.Required ? "required" : "") />
+                    break;
+                    
+                case FieldType.Boolean:
+                    var isChecked = value == "true";
+                    <div class="form-check">
+                        <input type="checkbox"
+                               name="FieldValues[@field.Id]"
+                               class="form-check-input"
+                               value="true"
+                               @(isChecked ? "checked" : "") />
+                        <input type="hidden" name="FieldValues[@field.Id]" value="false" />
+                        <label class="form-check-label">Yes / No</label>
+                    </div>
+                    break;
+            }
+            
+            @if(!string.IsNullOrEmpty(field.Description)) 
+            {
+                <div class="form-text">
+                    <i class="bi bi-info-circle text-muted" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       title="@field.Description"></i>
+                    @field.Description
+                </div>
+            }
+        </div>
+    }
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">@(isEdit ? "Save" : "Create") Item</button>
+        <a asp-action="Index" 
+            asp-route-inventoryId="@Model.InventoryId"
+            asp-route-sortBy="@Model.PagedRequest?.SortBy"
+            asp-route-sortOrder="@Model.PagedRequest?.SortOrder"
+            asp-route-page="@Model.PagedRequest?.Page"
+            asp-route-pageSize="@Model.PagedRequest?.PageSize"
+            asp-route-searchText="@Model.PagedRequest?.SearchText"
+            class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>

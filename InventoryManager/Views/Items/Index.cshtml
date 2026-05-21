@@ -1,0 +1,217 @@
+﻿@using InventoryManager.Models.ViewModels.Items.Index
+@using InventoryManager.Utilities.Pagination
+@model InventoryItemsViewModel
+@{
+    ViewData["Title"] = "Items page";
+}
+
+<form method="post" asp-action="Delete" id="deleteForm" style="display: none;"></form>
+<div class="container-fluid">
+    <form method="get" asp-action="Index">
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-12 col-sm">
+                <h3 class="mb-0">@ViewData["Title"]</h3>
+            </div>
+            @if(User.Identity?.IsAuthenticated ?? false) {
+                <div class="col-12 col-sm-auto">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-secondary" onclick="createItem()">
+                            Create
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="editSelected()">
+                            <i class="bi bi-pen-fill"></i>
+                        </button>
+                        <button type="submit" form="deleteForm" class="btn btn-outline-secondary">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+            <div class="col-12 col-sm-auto">
+                <input type="hidden" name="inventoryId" value="@Model.InventoryId" />
+                <input type="hidden" name="page" value="@Model.Items.PageIndex" />
+                <input type="hidden" name="pageSize" value="@Model.Items.PageSize" />
+                <input type="hidden" name="sortBy" value="@Model.Items.SortBy" />
+                <input type="hidden" name="sortOrder" value="@Model.Items.SortOrder" />
+                <div class="input-group">
+                    <input type="text" name="searchText" class="form-control border-secondary"
+                           value="@Model.Items.SearchText" placeholder="Filter..." />
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 40px;">
+                        <input type="checkbox" class="form-check-input" id="selectAll">
+                    </th>
+                    <th scope="col">CustomId</th>
+                    @foreach(var header in Model.Fields) {
+                        <th scope="col">@header.Name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Items.Elements.Any()) {
+                    @foreach(var item in Model.Items.Elements) {
+                        <tr>
+                            <td onclick="event.stopPropagation()">
+                                <input type="checkbox" class="form-check-input item-select" value="@item.Id">
+                            </td>
+                            <td>@item.CustomId</td>
+                            @if(item.ItemValues.Count() == 0) {
+                                foreach(var header in Model.Fields) {
+                                    <td>-</td>
+                                }
+                            }
+                            @foreach(var value in item.ItemValues) {
+                                <td>@value.Value</td>
+                            }
+                        </tr>
+                    }
+                } else {
+                    <tr>
+                        <td colspan="@(Model.Fields.Count() + 2)" class="text-center">
+                            No data available
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+            <select id="pageSizeSelect" class="form-select" style="width: 70px;">
+                <option value="10" selected="@(Model.Items.PageSize == 10)">10</option>
+                <option value="20" selected="@(Model.Items.PageSize == 20)">20</option>
+                <option value="50" selected="@(Model.Items.PageSize == 50)">50</option>
+                <option value="100" selected="@(Model.Items.PageSize == 100)">100</option>
+            </select>
+        </div>
+        @if(Model.Items.TotalPages > 1) {
+            <div class="d-flex gap-2 align-items-center">
+                <a class="btn btn-secondary @(Model.Items.PageIndex == 1 ? "disabled" : "")"
+                        href="#"
+                        onclick="goToPage(@(Model.Items.PageIndex - 1)); return false;">
+                    <b>&lt;</b>
+                </a>
+                <span class="px-2">
+                    <strong>@Model.Items.PageIndex</strong> / @Model.Items.TotalPages
+                </span>
+                <a class="btn btn-secondary @(Model.Items.PageIndex == Model.Items.TotalPages ? "disabled" : "")"
+                        href="#"
+                        onclick="goToPage(@(Model.Items.PageIndex + 1)); return false;">
+                    <b>&gt;</b>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const deleteForm = document.getElementById('deleteForm');
+    selectAllCheckbox?.addEventListener('change', function() {
+        document.querySelectorAll('.item-select').forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    deleteForm?.addEventListener('submit', function(e) {
+        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => cb.value);
+        if (selectedIds.length === 0) {
+            e.preventDefault();
+            return;
+        }
+        deleteForm.innerHTML = '';
+        const inventoryIdInput = document.createElement('input');
+        inventoryIdInput.type = 'hidden';
+        inventoryIdInput.name = 'inventoryId';
+        inventoryIdInput.value = '@Model.InventoryId';
+        deleteForm.appendChild(inventoryIdInput);
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'itemIds';
+            input.value = id;
+            deleteForm.appendChild(input);
+        });
+    });
+
+    function getPaginationParams() {
+        return {
+            sortBy: document.querySelector('input[name="sortBy"]')?.value || 'Created',
+            sortOrder: document.querySelector('input[name="sortOrder"]')?.value || 'desc',
+            page: document.querySelector('input[name="page"]')?.value || '1',
+            pageSize: document.querySelector('input[name="pageSize"]')?.value || '20',
+            searchText: document.querySelector('input[name="searchText"]')?.value || ''
+        };
+    }
+
+    function goToPage(page) {
+        const params = getPaginationParams();
+        params.page = page;
+        const url = '/Items/Index?' + new URLSearchParams({
+            inventoryId: '@Model.InventoryId',
+            sortBy: params.sortBy,
+            sortOrder: params.sortOrder,
+            page: params.page,
+            pageSize: params.pageSize,
+            searchText: params.searchText
+        }).toString();
+        window.location.href = url;
+    }
+
+    function createItem() {
+        const params = getPaginationParams();
+        const url = '/Items/Create?' + new URLSearchParams({
+            inventoryId: '@Model.InventoryId',
+            sortBy: params.sortBy,
+            sortOrder: params.sortOrder,
+            page: params.page,
+            pageSize: params.pageSize,
+            searchText: params.searchText
+        }).toString();
+        window.location.href = url;
+    }
+
+    function editSelected() {
+        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => cb.value); 
+        if (selectedIds.length === 0) {
+            return;
+        }
+        if (selectedIds.length > 1) {
+            return;
+        }
+        const params = getPaginationParams();
+        const url = '/Items/Update/' + selectedIds[0] + '?' + new URLSearchParams({
+            sortBy: params.sortBy,
+            sortOrder: params.sortOrder,
+            page: params.page,
+            pageSize: params.pageSize,
+            searchText: params.searchText
+        }).toString();
+        window.location.href = url;
+    }
+
+    document.getElementById('pageSizeSelect')?.addEventListener('change', function() {
+        const params = getPaginationParams();
+        params.pageSize = this.value;
+        params.page = 1;
+        const url = '/Items/Index?' + new URLSearchParams({
+            inventoryId: '@Model.InventoryId',
+            sortBy: params.sortBy,
+            sortOrder: params.sortOrder,
+            page: params.page,
+            pageSize: params.pageSize,
+            searchText: params.searchText
+        }).toString();
+        window.location.href = url;
+    });
+</script>

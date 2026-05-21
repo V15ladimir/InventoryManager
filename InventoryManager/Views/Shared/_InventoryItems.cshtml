@@ -1,0 +1,111 @@
+﻿@using InventoryManager.Models.ViewModels.Items.Index
+@using InventoryManager.Utilities.Pagination
+@model InventoryItemsViewModel
+@{
+    var inventoryId = ViewData["InventoryId"];
+}
+
+<div class="d-flex justify-content-end gap-2 mt-2 mb-2">
+    <button type="button" class="btn btn-outline-secondary" onclick="window.location='@Url.Action("Create", "Items", new { inventoryId })'">Add</button>
+    <button type="button" class="btn btn-outline-secondary" onclick="editSelected()"><i class="bi bi-pen-fill"></i></button>
+    <button type="submit" form="deleteForm" class="btn btn btn-outline-danger"><i class="bi bi-trash-fill"></i></button>
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col" style="width: 40px;">
+                <input type="checkbox" class="form-check-input" id="selectAll">
+            </th>
+            <th scope="col">CustomId</th>
+            @foreach(var header in Model.Fields) {
+                <th scope="col">@header.Name</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if(Model.Items.Elements.Any()) {
+            @foreach(var item in Model.Items.Elements) {
+                <tr>
+                    <td onclick="event.stopPropagation()">
+                        <input type="checkbox" class="form-check-input item-select" value="@item.Id">
+                    </td>
+                    <td>@item.CustomId</td>
+                    @if(item.ItemValues.Count() == 0) {
+                        foreach(var header in Model.Fields) {
+                            <td>-</td>
+                        }
+                    }
+                    @foreach(var value in item.ItemValues)
+                    {
+                        <td>@value.Value</td>
+                    }
+                </tr>
+            }
+        } else {
+            <tr>
+                <td colspan="@(Model.Fields.Count() + 2)" class="text-center">
+                    No data available
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<nav aria-label="...">
+    <ul class="pagination">
+        @{
+            var current = Model.Items.PageIndex;
+            var totalPages = Model.Items.TotalPages;
+            var start = current == 1 ? 1 : (current == totalPages ? totalPages - 2 : current - 1);
+            var end = start + 2;
+        }
+        @if(totalPages > 1) {
+            for(var i = start; i <= end; i++) {
+                <li class="page-item @(i == current ? "active" : string.Empty)">
+                    <a class="page-link" asp-route-inventoryId="@inventoryId" asp-route-Page="@i" asp-route-PageSize="@Model.Items.PageSize">@i</a>
+                </li>
+            }
+        }
+    </ul>
+</nav>
+<script>
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const deleteForm = document.getElementById('deleteForm');
+
+    selectAllCheckbox?.addEventListener('change', function() {
+        document.querySelectorAll('.item-select').forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    deleteForm?.addEventListener('submit', function(e) {
+        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => cb.value);
+        
+        deleteForm.innerHTML = '';
+        const inventoryIdInput = document.createElement('input');
+        inventoryIdInput.type = 'hidden';
+        inventoryIdInput.name = 'inventoryId';
+        inventoryIdInput.value = '@inventoryId';
+        deleteForm.appendChild(inventoryIdInput);
+
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'itemIds';
+            input.value = id;
+            deleteForm.appendChild(input);
+        });
+    });
+
+    function editSelected() {
+        const selectedIds = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => cb.value);
+        if (selectedIds.length === 0) {
+            return;
+        }
+        if (selectedIds.length > 1) {s
+            return;
+        }
+        window.location.href = `/Items/Update/${selectedIds[0]}`;
+    }
+</script>

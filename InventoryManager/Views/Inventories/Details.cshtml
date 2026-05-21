@@ -1,0 +1,97 @@
+﻿@using InventoryManager.Models.ViewModels
+@using InventoryManager.Models.ViewModels.Items
+@using InventoryManager.Models.ViewModels.Items.Index
+@using InventoryManager.Models.Entitites.Inventories
+@using InventoryManager.Utilities.Pagination
+@model ItemsIndexViewModel
+@{
+    ViewData["Title"] = $"Inventory page";
+}
+
+<input type="hidden" name="Id" value="@Model.InventoryId" />
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h3>@ViewData["Title"]</h3>
+    </div>
+</div>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#items" type="button">Items</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#discussions" type="button">Chat</button>
+    </li>
+    @if(User.Identity?.IsAuthenticated ?? false)
+    {
+        <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#settings" type="button">Setting</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#customid" type="button">Custom ID</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fields" type="button">Fields</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#access" type="button">Access</button>
+        </li>
+    }
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#stats" type="button">Stats</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#export" type="button">Export</button>
+    </li>
+    
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="items">
+        <div class="tab-pane fade show active" id="items">
+            <div class="text-center p-5">
+                <a asp-controller="Items" 
+                    asp-action="Index" 
+                    asp-route-inventoryId="@Model.InventoryId"
+                    asp-route-Page="1"
+                    asp-route-PageSize="10"
+                    class="btn btn-primary">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> Go to Items
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="discussions">
+        @await Html.PartialAsync("_InventoryDiscussions", Model.InventoryId)
+    </div>
+    
+    @if(User.Identity?.IsAuthenticated ?? false) {
+        <div class="tab-pane fade" id="settings">
+            @await Html.PartialAsync("_InventorySettings", Model.Settings, new ViewDataDictionary(ViewData) {
+            { "InventoryId", Model.InventoryId }
+            })
+        </div>
+        <div class="tab-pane fade" id="customid">
+            @await Html.PartialAsync("_CustomIdParts", Model.Parts, new ViewDataDictionary(ViewData) {
+            { "InventoryId", Model.InventoryId }
+            })
+        </div>    
+        <div class="tab-pane fade" id="fields">
+            @await Html.PartialAsync("_CustomFields", Model.Fields, new ViewDataDictionary(ViewData) {
+            { "InventoryId", Model.InventoryId }
+            })
+        </div>
+        <div class="tab-pane fade" id="access">
+            <div class="text-center p-5">
+                <a asp-action="SearchAccess" 
+                asp-route-InventoryId="@Model.InventoryId"
+                asp-route-Page="1"
+                asp-route-PageSize="10"
+                class="btn btn-primary">
+                    <i class="bi bi-person-check-fill"></i> Go to Access
+                </a>
+            </div>
+        </div>
+    }
+</div>    
+<script src="~/js/custom-id-parts.js"></script>
+<script src="~/js/custom-fields.js"></script>
+<script src="~/js/discussions.js"></script>

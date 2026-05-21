@@ -1,0 +1,81 @@
+using InventoryManager.Data;
+using InventoryManager.Hubs;
+using InventoryManager.Models.Entitites;
+using InventoryManager.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using InventoryManager.Validators;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions => {
+        googleOptions.ClientId = Environment.GetEnvironmentVariable("Authentication__Google__ClientId")
+            ?? throw new InvalidOperationException("Google ClientId not found");
+        googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Authentication__Google__ClientSecret")
+            ?? throw new InvalidOperationException("Google ClientSecret not found");
+    })
+    .AddGitHub(githubOptions => {
+        githubOptions.ClientId = Environment.GetEnvironmentVariable("Authentication__GitHub__ClientId")
+            ?? throw new InvalidOperationException("GitHub ClientId not found");
+        githubOptions.ClientSecret = Environment.GetEnvironmentVariable("Authentication__GitHub__ClientSecret")
+            ?? throw new InvalidOperationException("GitHub ClientSecret not found");
+        githubOptions.Scope.Add("user:email");
+        githubOptions.SaveTokens = true;
+    });
+builder.Services.AddControllersWithViews(options => {
+    options.ModelValidatorProviders.Clear();
+});
+builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string not found");
+builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseNpgsql(connectionString));
+builder.Services.AddScoped<ApplicationDbInitializer>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 1;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+}).AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IDiscussionService, DiscussionService>();
+builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomFieldsValidator>();
+
+var app = builder.Build();
+app.Use((context, next) => {
+    context.Request.Scheme = "https";
+    return next();
+});
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+}
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+using(var scope = app.Services.CreateScope())
+    await scope.ServiceProvider.GetRequiredService<ApplicationDbInitializer>().InitializeAsync(scope.ServiceProvider);
+
+app.MapRazorPages();
+app.MapStaticAssets();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+app.MapHub<DiscussionHub>("/discussionHub");
+app.Run();

@@ -1,0 +1,56 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Shared
+@using InventoryManager.Models.Enums
+@model InventoryFieldViewModel
+
+<div class="card mt-2 field-item" data-field-order="@Model.Order">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="drag-handle" style="cursor:grab">
+                <i class="bi bi-grip-vertical"></i>
+                @GetFieldTypeName(Model.Type)
+            </span>
+            <button type="button" class="btn-close" onclick="removeField(this)"></button>
+        </div>
+        <input type="hidden" name="CustomFields[@Model.Order].Id" value="@Model.Id" />
+        <input type="hidden" name="CustomFields[@Model.Order].Order" value="@Model.Order" />
+        <input type="hidden" name="CustomFields[@Model.Order].Type" value="@((int)Model.Type)" />
+        
+        <div class="row">
+            <div class="col-md-3">
+                <input name="CustomFields[@Model.Order].Name"
+                       class="form-control"
+                       placeholder="Name"
+                       value="@Model.Name"
+                       oninput="scheduleFieldAutoSave()" />
+            </div>
+            <div class="col-md-6">
+                <input name="CustomFields[@Model.Order].Description"
+                       class="form-control"
+                       placeholder="Description"
+                       value="@Model.Description"
+                       oninput="scheduleFieldAutoSave()" />
+            </div>
+            <div class="col-md-3">
+                <select name="CustomFields[@Model.Order].State"
+                        class="form-select"
+                        onchange="scheduleFieldAutoSave()">
+                    <option value="0" selected="@(Model.State == FieldState.NotPresent)">Not present</option>
+                    <option value="1" selected="@(Model.State == FieldState.Optional)">Optional</option>
+                    <option value="2" selected="@(Model.State == FieldState.Required)">Required</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+@functions {
+    string GetFieldTypeName(FieldType type) {
+        return type switch {
+            FieldType.SingleLine => "Single-line text",
+            FieldType.MultiLine => "Multi-line text",
+            FieldType.Number => "Number",
+            FieldType.Link => "Link",
+            FieldType.Boolean => "Checkbox",
+            _ => "Unknown"
+        };
+    }
+}

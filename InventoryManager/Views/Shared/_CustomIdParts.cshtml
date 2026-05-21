@@ -1,0 +1,42 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Form
+@using InventoryManager.Models.ViewModels.Inventories.Shared
+@model InventoryCustomIdPartsViewModel
+@{
+    var inventoryId = ViewData["InventoryId"];
+}
+
+<form id="customIdForm" method="post" asp-action="UpdateCustomIdParts" asp-controller="Inventories">
+    @Html.AntiForgeryToken()
+    <div class="mt-2">
+        <input type="hidden" name="InventoryId" value="@inventoryId" />
+        <div id="partsContainer">
+            <span id="partsSaveIndicator" class="badge bg-secondary">Autosave enabled</span>
+            @if(Model != null && Model.CustomIdParts.Any()){
+                @foreach(var part in Model.CustomIdParts.OrderBy(x => x.Order)) {
+                    @await Html.PartialAsync("_CustomIdPart", part)
+                }
+            }
+        </div>
+        <div class="mt-2">
+            <button type="button" class="btn btn-primary" onclick="saveParts()" id="manualSaveBtn">
+                Save
+            </button>
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Add element</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="addPart(0)">Fixed Text</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(1)">Random 20bit</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(2)">Random 32bit</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(3)">Random 6-digit</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(4)">Random 9-digit</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(5)">GUID</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(6)">DateTime</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="addPart(7)">Sequence</a></li>
+                </ul>
+            </div>
+            <code id="customIdPreview" class="text-dark">Example not generated yet</code>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,87 @@
+﻿@using InventoryManager.Models.ViewModels.Home.Index
+@{
+    ViewData["Title"] = "Home Page";
+}
+@model HomeIndexViewModel
+
+<div class="container-fluid">
+    <div class="mb-3">
+        <h3>Latest Inventories</h3>
+        <table class="table table-borderless w-100">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Created by</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.LatestInventories.Any()) {
+                    @foreach(var inventory in Model.LatestInventories) {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("Details", "Inventories", new { inventoryId = inventory.Basic.Id })">
+                                    @inventory.Basic.Name
+                                </a>
+                            </td>
+                            <td>@inventory.Basic.Description</td>
+                            <td>@inventory.Category.CategoryName</td>
+                            <td>@inventory.Audit.CreatedBy</td>
+                            <td>@inventory.Audit.CreatedAt</td>
+                        </tr>
+                    }
+                } else {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No data available
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="mb-5">
+        <h3>Top 5 Inventories</h3>
+        <table class="table table-borderless w-100">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Created by</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.TopInventories.Any()) {
+                    @foreach(var inventory in Model.TopInventories) {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("Details", "Inventories", new { inventoryId = inventory.Basic.Id })">
+                                    @inventory.Basic.Name
+                                </a>
+                            </td>
+                            <td>@inventory.Basic.Description</td>
+                            <td>@inventory.Category.CategoryName</td>
+                            <td>@inventory.Audit.CreatedBy</td>
+                            <td>@inventory.Audit.CreatedAt</td>
+                        </tr>
+                    }
+                } else {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No data available
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-5 pt-4 text-center">
+        <a href="@Url.Action("Index", "Inventories")">
+            View All Inventories
+        </a>
+    </div>
+</div>

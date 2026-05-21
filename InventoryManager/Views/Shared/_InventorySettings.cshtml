@@ -1,0 +1,114 @@
+﻿@using InventoryManager.Models.ViewModels.Inventories.Form
+@model InventorySettingsViewModel
+@{
+    var isEditMode = Model.InventoryId > 0;
+    var keyupTrigger = isEditMode ? "keyup delay:7s" : "none";
+    var changeTrigger = isEditMode ? "change delay:7s" : "none";
+    var savePost = isEditMode ? "/Inventories/UpdateInventory" : "/Inventories/CreateInventory";
+}
+
+<form id="settingsForm"
+      hx-target="#settingsForm"
+      hx-swap="outerHTML"
+      hx-indicator="#settingsIndicator">
+    @Html.AntiForgeryToken()
+    <div class="mt-2">
+        <input type="hidden" asp-for="InventoryId" />
+        <input type="hidden" asp-for="PagedRequest.SortBy" />
+        <input type="hidden" asp-for="PagedRequest.SortOrder" />
+        <input type="hidden" asp-for="PagedRequest.Page" />
+        <input type="hidden" asp-for="PagedRequest.PageSize" />
+        <input type="hidden" asp-for="PagedRequest.SearchText" />
+        @if(isEditMode){
+            <span id="settingsIndicator" class="badge bg-secondary">Autosave enabled</span>
+        }
+        <div class="mt-3">
+            <div class="mb-3">
+                <label class="fw-semibold">Name</label>
+                <input asp-for="Details.InventoryName"
+                    class="form-control"
+                    hx-post="@savePost"
+                    hx-trigger="@keyupTrigger"
+                    hx-target="#settingsForm"
+                    hx-swap="outerHTML" />
+                <span asp-validation-for="Details.InventoryName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="fw-semibold">Description</label>
+                <textarea asp-for="Details.InventoryDescription"
+                    class="form-control"
+                    rows="5"
+                    hx-post="@savePost"
+                    hx-trigger="@keyupTrigger"
+                    hx-target="#settingsForm"
+                    hx-swap="outerHTML"></textarea>
+                <span asp-validation-for="Details.InventoryDescription" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="fw-semibold">Category</label>
+                <select asp-for="Details.InventoryCategoryId"
+                    class="form-select"
+                    hx-post="@savePost"
+                    hx-trigger="@changeTrigger"
+                    hx-target="#settingsForm"
+                    hx-swap="outerHTML">
+                    @foreach(var category in Model.Categories) {
+                        <option value="@category.CategoryId">@category.CategoryName</option>
+                    }
+                </select>
+                <span asp-validation-for="Details.InventoryCategoryId" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-check">
+                <input asp-for="Details.IsPublicInventory"
+                    class="form-check-input"
+                    hx-post="@savePost"
+                    hx-trigger="@changeTrigger"
+                    hx-target="#settingsForm"
+                    hx-swap="outerHTML" />
+                <label asp-for="Details.IsPublicInventory">Public Inventory</label>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button type="submit"
+                    class="btn btn-primary"
+                    hx-post="@savePost"
+                    hx-trigger="click"
+                    hx-target="#settingsForm"
+                    hx-swap="outerHTML">
+                    @(isEditMode ? "Save Settings" : "Create Inventory")
+                </button>
+                @if(Model.InventoryId == 0){
+                    <a href="@Url.Action("Index", "Inventories", Model.PagedRequest)" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+@if(isEditMode)
+{
+    <script>
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            setTimeout(() => {
+                const ind = document.getElementById('settingsIndicator');
+                if (!ind) return;
+                const xhr = evt.detail.xhr;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    ind.className = 'badge bg-success';
+                    ind.innerHTML = 'Saved';
+                } 
+                else {
+                    ind.className = 'badge bg-danger';
+                    ind.innerHTML = 'Error';
+                }
+                setTimeout(() => {
+                    const ind2 = document.getElementById('settingsIndicator');
+                    if (ind2) {
+                        ind2.className = 'badge bg-secondary';
+                        ind2.innerHTML = 'Autosave';
+                    }
+                }, 3000);
+            }, 50);
+        });
+    </script>
+}

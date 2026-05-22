@@ -1,8 +1,9 @@
-﻿@using InventoryManager.Models.ViewModels.Items.Index
+﻿@using InventoryManager.Models.Enums
+@using InventoryManager.Models.ViewModels.Items.Index
 @using InventoryManager.Utilities.Pagination
 @model InventoryItemsViewModel
 @{
-    ViewData["Title"] = "Items page";
+    ViewData["Title"] = "Items Page";
 }
 
 <form method="post" asp-action="Delete" id="deleteForm" style="display: none;"></form>
@@ -47,9 +48,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 40px;">
-                        <input type="checkbox" class="form-check-input" id="selectAll">
-                    </th>
+                    @if(User.Identity?.IsAuthenticated ?? false) {
+                        <th scope="col" style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                    }
                     <th scope="col">CustomId</th>
                     @foreach(var header in Model.Fields) {
                         <th scope="col">@header.Name</th>
@@ -60,23 +63,36 @@
                 @if(Model.Items.Elements.Any()) {
                     @foreach(var item in Model.Items.Elements) {
                         <tr>
-                            <td onclick="event.stopPropagation()">
-                                <input type="checkbox" class="form-check-input item-select" value="@item.Id">
-                            </td>
-                            <td>@item.CustomId</td>
-                            @if(item.ItemValues.Count() == 0) {
-                                foreach(var header in Model.Fields) {
-                                    <td>-</td>
-                                }
+                            @if(User.Identity?.IsAuthenticated ?? false) {
+                                <td onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="form-check-input item-select" value="@item.Id">
+                                </td>
                             }
-                            @foreach(var value in item.ItemValues) {
-                                <td>@value.Value</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id">
+                                    @item.CustomId
+                                </a>
+                            </td>
+                            @foreach(var field in Model.Fields) {
+                                var value = item.ItemValues.FirstOrDefault(v => v.FieldId == field.Id);
+                                var displayValue = value?.Value ?? "-";
+                                <td>
+                                    @if(field.Type == FieldType.Link && !string.IsNullOrWhiteSpace(value?.Value)) {
+                                        <a href="@value.Value" target="_blank" rel="noopener noreferrer">@value.Value</a>
+                                    } else {
+                                        @(value?.Value ?? "-")
+                                    }
+                                </td>
                             }
                         </tr>
                     }
                 } else {
+                    var colspan = Model.Fields.Count() + 1;
+                    if(User.Identity?.IsAuthenticated ?? false) {
+                        colspan++;
+                    }
                     <tr>
-                        <td colspan="@(Model.Fields.Count() + 2)" class="text-center">
+                        <td colspan="@colspan" class="text-center">
                             No data available
                         </td>
                     </tr>

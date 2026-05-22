@@ -57,6 +57,7 @@ namespace InventoryManager.Services.Mappers {
         private static ItemFieldViewModel ToViewModel2(this InventoryFieldDto field) {
             return new ItemFieldViewModel {
                 Id = field.Id,
+                Type = field.Type,
                 Name = field.Name
             };
         }
@@ -65,7 +66,11 @@ namespace InventoryManager.Services.Mappers {
             return new ItemFieldValuesViewModel {
                 Id = itemValues.ItemId,
                 CustomId = itemValues.CustomId,
-                ItemValues = itemValues.ItemValues.Select(x => new ItemFieldValueViewModel { Id = x.Id, Value = x.Value })
+                ItemValues = itemValues.ItemValues.Select(x => new ItemFieldValueViewModel { 
+                    Id = x.Id, 
+                    FieldId = x.FieldId, 
+                    Value = x.Value 
+                })
             };
         }
 
@@ -75,7 +80,11 @@ namespace InventoryManager.Services.Mappers {
             return new ItemFieldValuesViewModel {
                 Id = item.Id,
                 CustomId = item.CustomId,
-                ItemValues = itemValues.Select(y => new ItemFieldValueViewModel{ Id = y.Id, Value = y.Value })
+                ItemValues = itemValues.Select(y => new ItemFieldValueViewModel{ 
+                    Id = y.Id, 
+                    FieldId = y.FieldId,
+                    Value = y.Value 
+                })
             };
         }
 

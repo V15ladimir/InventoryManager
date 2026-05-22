@@ -1,5 +1,90 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using InventoryManager.Models.ViewModels.Items
+@using InventoryManager.Models.ViewModels.Items.Form
+@using InventoryManager.Models.Enums
+@model ItemFormViewModel
 @{
+    var title = $"Item Details";
+    ViewData["Title"] = title;
 }
+
+<form method="post" asp-action="Index">
+    <div class="mb-4">
+        <h3>@title</h3>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-bold">Custom ID</label>
+        <div class="form-control-plaintext">@Model.CustomId</div>
+    </div>
+    @foreach(var field in Model.Fields) 
+    {
+        var value = Model.FieldValues.ContainsKey(field.Id) ? Model.FieldValues[field.Id] : "";
+        <div class="mb-3">
+            <label class="form-label fw-bold">
+                @field.Name
+                @if(field.State == FieldState.Required) 
+                {
+                    <span class="text-danger">*</span>
+                }
+            </label>
+            @switch(field.Type) 
+            {
+                case FieldType.SingleLine:
+                case FieldType.MultiLine:
+                case FieldType.Number:
+                    <div class="form-control-plaintext">@(string.IsNullOrEmpty(value) ? "-" : value)</div>
+                    break;
+                case FieldType.Link:
+                    <div class="form-control-plaintext">
+                        @if(!string.IsNullOrEmpty(value))
+                        {
+                            <a href="@value" target="_blank">@value</a>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </div>
+                    break;
+                case FieldType.Boolean:
+                    <div class="form-control-plaintext">
+                        @if(value == "true")
+                        {
+                            <span>Yes</span>
+                        }
+                        else if(value == "false")
+                        {
+                            <span>No</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </div>
+                    break;
+            }
+            @if(!string.IsNullOrEmpty(field.Description)) 
+            {
+                <div class="form-text">@field.Description</div>
+            }
+        </div>
+    }
+    @* <div class="d-flex gap-2">
+        <a asp-action="Update" 
+           asp-route-id="@Model.Id"
+           asp-route-inventoryId="@Model.InventoryId"
+           asp-route-sortBy="@Model.PagedRequest?.SortBy"
+           asp-route-sortOrder="@Model.PagedRequest?.SortOrder"
+           asp-route-page="@Model.PagedRequest?.Page"
+           asp-route-pageSize="@Model.PagedRequest?.PageSize"
+           asp-route-searchText="@Model.PagedRequest?.SearchText"
+           class="btn btn-primary">Edit Item</a>
+        <a asp-action="Index" 
+            asp-route-inventoryId="@Model.InventoryId"
+            asp-route-sortBy="@Model.PagedRequest?.SortBy"
+            asp-route-sortOrder="@Model.PagedRequest?.SortOrder"
+            asp-route-page="@Model.PagedRequest?.Page"
+            asp-route-pageSize="@Model.PagedRequest?.PageSize"
+            asp-route-searchText="@Model.PagedRequest?.SearchText"
+            class="btn btn-secondary">Cancel</a>
+    </div> *@
+</form>

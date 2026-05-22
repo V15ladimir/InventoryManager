@@ -134,7 +134,7 @@ function updatePreview() {
     const hasParts = document.querySelectorAll('.part-item').length > 0;
     const preview = document.getElementById('customIdPreview');
     if (!hasParts) {
-        if (preview) preview.innerHTML = 'Not generated yet';
+        if (preview) preview.innerHTML = 'Example not generated yet';
         return;
     }
     previewTimer = setTimeout(async () => {

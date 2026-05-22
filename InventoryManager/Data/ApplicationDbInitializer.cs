@@ -4,6 +4,7 @@ using InventoryManager.Models.Entitites.Custom;
 using InventoryManager.Models.Entitites.Inventories;
 using InventoryManager.Models.Entitites.Items;
 using InventoryManager.Models.Enums;
+using InventoryManager.Services.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -185,6 +186,8 @@ namespace InventoryManager.Data {
                     CreatedAt = DateTime.UtcNow,
                     ItemValues = values
                 };
+                item.SearchText = ItemSearchBuilder.Build(item);
+
 
                 await context.Items.AddAsync(item);
             }
@@ -222,7 +225,7 @@ namespace InventoryManager.Data {
                     CreatedAt = DateTime.UtcNow,
                     ItemValues = values
                 };
-
+                item.SearchText = ItemSearchBuilder.Build(item);
                 await context.Items.AddAsync(item);
             }
 
@@ -257,6 +260,7 @@ namespace InventoryManager.Data {
                     ItemValues = values
                 };
 
+                item.SearchText = ItemSearchBuilder.Build(item);
                 await context.Items.AddAsync(item);
             }
 

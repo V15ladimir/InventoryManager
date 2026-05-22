@@ -40,6 +40,19 @@ namespace InventoryManager.Controllers {
             ));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(int id, PagedRequest pagedRequest) {
+            var item = await itemService.GetItemAsync(id);
+            var fields = await itemService.GetItemFieldsAsync(item.InventoryId);
+            return View("Details", fields.ToViewModel(
+                item.ItemId,
+                item.InventoryId,
+                item.CustomId,
+                pagedRequest,
+                await itemService.GetItemValuesAsync(id)
+            ));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(ItemFormViewModel item) {
             //return RedirectToAction("AccessDenied", "Home");

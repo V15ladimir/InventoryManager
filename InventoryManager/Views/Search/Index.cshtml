@@ -35,9 +35,8 @@
                 }
                 @foreach (var item in Model.Items)
                 {
-                    <tr onclick="window.location='/Items/Details/@item.Id'" style="cursor:pointer">
+                    <tr onclick="window.location.href='@Url.Action("Details", "Items", new { item.Id })'" style="cursor:pointer">
                         <td><span class="badge bg-info">Item</span></td>
-                        @* <td><strong>@item.Name</strong></td> *@
                         <td class="text-muted">@item.CustomId in @item.InventoryName</td>
                         <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
                     </tr>

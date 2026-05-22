@@ -9,6 +9,7 @@ using InventoryManager.Services.Extensions;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
 using InventoryManager.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,6 +64,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateInventory(InventorySettingsViewModel settings) {
             var validation = await settingsValidator.ValidateAsync(settings);
             var categories = await categoryService.GetCategoriesAsync();
@@ -77,6 +79,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateInventory(int inventoryId, InventorySettingsViewModel settings) {
             var validation = await settingsValidator.ValidateAsync(settings);
             var categories = await categoryService.GetCategoriesAsync();
@@ -90,6 +93,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateCustomIdParts(InventoryCustomIdPartsViewModel parts) {
             var validation = await customIdPartsValidator.ValidateAsync(parts);
             if(!validation.IsValid)
@@ -101,6 +105,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateCustomFields(InventoryCustomFieldsViewModel fields) {
             var validation = await customFieldsValidator.ValidateAsync(fields);
             if(!validation.IsValid)
@@ -112,6 +117,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateAccess(
             int inventoryId, 
             InventoryAccessViewModel acces, 
@@ -128,6 +134,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Delete(List<int> inventoryIds, PagedRequest pagedRequest) {
             await inventoryService.DeleteInventoryAsync(inventoryIds);
             return RedirectToAction("Index", pagedRequest);

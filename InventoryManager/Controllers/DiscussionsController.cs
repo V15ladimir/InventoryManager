@@ -4,6 +4,7 @@ using InventoryManager.Models.ViewModels.Discussions;
 using InventoryManager.Services;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -23,6 +24,7 @@ namespace InventoryManager.Controllers {
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateInventoryDicussionViewModel discussionModel) {
             var discussion = await discussionService.CreateDiscussionAsync(discussionModel.ToDto(userManager.GetUserId(User)));
             await hubContext.Clients.Group($"inventory-{discussionModel.InventoryId}")

@@ -2,6 +2,7 @@
 using InventoryManager.Services;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManager.Controllers {
@@ -54,6 +55,7 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(ItemFormViewModel item) {
             //return RedirectToAction("AccessDenied", "Home");
             await itemService.CreateItemAsync(item.ToDto());
@@ -61,12 +63,14 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Update(ItemFormViewModel item) {
             await itemService.UpdateItemAsync(item.ToUpdateDto());
             return RedirectToAction("Index", item.ToViewModel());
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Delete(int inventoryId, List<int> itemIds) {
             await itemService.DeleteItemsAsync(inventoryId, itemIds);
             return RedirectToAction("Index", new { inventoryId });

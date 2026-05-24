@@ -22,7 +22,6 @@ namespace InventoryManager.Controllers {
             return Ok(discussions.ToViewModel());
         }
 
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateInventoryDicussionViewModel discussionModel) {

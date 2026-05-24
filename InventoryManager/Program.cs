@@ -12,11 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddAuthentication()
     .AddGoogle(googleOptions => {
-        googleOptions.ClientId = Environment.GetEnvironmentVariable("Authentication__Google__ClientId")
-            ?? throw new InvalidOperationException("Google ClientId not found");
-        googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Authentication__Google__ClientSecret")
-            ?? throw new InvalidOperationException("Google ClientSecret not found");
-    })
+         googleOptions.ClientId = Environment.GetEnvironmentVariable("Authentication__Google__ClientId")
+             ?? throw new InvalidOperationException("Google ClientId not found");
+         googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Authentication__Google__ClientSecret")
+             ?? throw new InvalidOperationException("Google ClientSecret not found");
+     })
     .AddGitHub(githubOptions => {
         githubOptions.ClientId = Environment.GetEnvironmentVariable("Authentication__GitHub__ClientId")
             ?? throw new InvalidOperationException("GitHub ClientId not found");
@@ -41,7 +41,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
-}).AddEntityFrameworkStores<ApplicationDbContext>()
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
+builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomFieldsValidator>();

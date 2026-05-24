@@ -7,5 +7,6 @@ namespace InventoryManager.Models.ViewModels.Items.Index {
         public int InventoryId { get; set; }
         public List<ItemFieldViewModel> Fields { get; set; } = [];
         public PagedList<ItemFieldValuesViewModel> Items = new([]);
+        public bool HasSuperAccess { get; set; }
     }
 }

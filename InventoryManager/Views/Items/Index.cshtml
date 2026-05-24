@@ -1,4 +1,4 @@
-﻿@using InventoryManager.Models.Enums
+﻿@* @using InventoryManager.Models.Enums
 @using InventoryManager.Models.ViewModels.Items.Index
 @using InventoryManager.Utilities.Pagination
 @model InventoryItemsViewModel
@@ -13,7 +13,7 @@
             <div class="col-12 col-sm">
                 <h3 class="mb-0">@ViewData["Title"]</h3>
             </div>
-            @if(User.Identity?.IsAuthenticated ?? false) {
+            @if(Model.HasSuperAccess) {
                 <div class="col-12 col-sm-auto">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-secondary" onclick="createItem()">
@@ -230,4 +230,4 @@
         }).toString();
         window.location.href = url;
     });
-</script>
+</script> *@

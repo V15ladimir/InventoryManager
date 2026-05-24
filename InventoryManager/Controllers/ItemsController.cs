@@ -1,25 +1,31 @@
-﻿using InventoryManager.Models.ViewModels.Items.Form;
+﻿using InventoryManager.Models.Entitites;
+using InventoryManager.Models.ViewModels.Items.Form;
 using InventoryManager.Services;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManager.Controllers {
 
-    public class ItemsController(IItemService itemService) : Controller {
+    public class ItemsController(
+        UserManager<ApplicationUser> userManager, 
+        IItemService itemService, 
+        IAccessService accessService) : Controller {
 
         [HttpGet]
         public async Task<IActionResult> Index(int inventoryId, PagedRequest pagedRequest) {
+            var canEdit = await accessService.CanEditItemsAsync(inventoryId, userManager.GetUserId(User));
             var items = await itemService.GetItemsAsync(inventoryId, pagedRequest);
-            return View(items.ToViewModel());
+            return PartialView("_InventoryItems", items.ToViewModel(canEdit));
         }
 
         [HttpGet]
         public async Task<IActionResult> Create(int inventoryId, PagedRequest pagedRequest) {
             var customId = await itemService.GetItemCustomIdAsync(inventoryId);
             var fields = await itemService.GetItemFieldsAsync(inventoryId);
-            return View("Form", fields.ToViewModel(
+            return PartialView("Form", fields.ToViewModel(
                 0,
                 inventoryId, 
                 customId, 
@@ -29,15 +35,15 @@ namespace InventoryManager.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> Update(int id, PagedRequest pagedRequest) {
-            var item = await itemService.GetItemAsync(id);
+        public async Task<IActionResult> Edit(int itemId, PagedRequest pagedRequest) {
+            var item = await itemService.GetItemAsync(itemId);
             var fields = await itemService.GetItemFieldsAsync(item.InventoryId);
-            return View("Form", fields.ToViewModel(
+            return PartialView("Form", fields.ToViewModel(
                 item.ItemId,
                 item.InventoryId,
                 item.CustomId,
                 pagedRequest,
-                await itemService.GetItemValuesAsync(id)
+                await itemService.GetItemValuesAsync(itemId)
             ));
         }
 
@@ -57,23 +63,28 @@ namespace InventoryManager.Controllers {
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create(ItemFormViewModel item) {
-            //return RedirectToAction("AccessDenied", "Home");
             await itemService.CreateItemAsync(item.ToDto());
-            return RedirectToAction("Index", item.ToViewModel());
+            var canEdit = await accessService.CanEditItemsAsync(item.InventoryId, userManager.GetUserId(User));
+            var items = await itemService.GetItemsAsync(item.InventoryId, item.PagedRequest);
+            return PartialView("_InventoryItems", items.ToViewModel(canEdit));
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Update(ItemFormViewModel item) {
+        public async Task<IActionResult> Edit(ItemFormViewModel item) {
             await itemService.UpdateItemAsync(item.ToUpdateDto());
-            return RedirectToAction("Index", item.ToViewModel());
+            var canEdit = await accessService.CanEditItemsAsync(item.InventoryId, userManager.GetUserId(User));
+            var items = await itemService.GetItemsAsync(item.InventoryId, item.PagedRequest);
+            return PartialView("_InventoryItems", items.ToViewModel(canEdit));
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
         public async Task<IActionResult> Delete(int inventoryId, List<int> itemIds) {
             await itemService.DeleteItemsAsync(inventoryId, itemIds);
-            return RedirectToAction("Index", new { inventoryId });
+            var canEdit = await accessService.CanEditItemsAsync(inventoryId, userManager.GetUserId(User));
+            var items = await itemService.GetItemsAsync(inventoryId, new PagedRequest());
+            return PartialView("_InventoryItems", items.ToViewModel(canEdit));
         }
     }
 }

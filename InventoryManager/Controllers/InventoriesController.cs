@@ -19,6 +19,7 @@ namespace InventoryManager.Controllers {
         UserManager<ApplicationUser> userManager, 
         IInventoryService inventoryService,
         ICategoryService categoryService,
+        IAccessService accessService,
         IValidator<InventorySettingsViewModel> settingsValidator,
         IValidator<InventoryCustomIdPartsViewModel> customIdPartsValidator,
         IValidator<InventoryCustomFieldsViewModel> customFieldsValidator) : Controller {
@@ -50,11 +51,14 @@ namespace InventoryManager.Controllers {
             var categories = await categoryService.GetCategoriesAsync();
             var parts = await inventoryService.GetInventoryIdPartsAsync(inventoryId);
             var fields = await inventoryService.GetInventoryFieldsAsync(inventoryId);
+            var hasSuperAccess = await accessService.CanEditInventoryAsync(inventoryId, userManager.GetUserId(User));
             return View(inventory.ToItemsIndexViewModel(
+                hasSuperAccess,
                 categories, 
                 parts, 
                 fields, 
-                pagedRequest));
+                pagedRequest
+            ));
         }
 
         [HttpGet]

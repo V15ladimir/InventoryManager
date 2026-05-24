@@ -1,9 +1,6 @@
-﻿using InventoryManager.Models.Entitites;
-using InventoryManager.Models.Entitites.Inventories;
-using InventoryManager.Models.Entitites.Items;
+﻿using InventoryManager.Models.Entitites.Items;
 using InventoryManager.Utilities.Pagination;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace InventoryManager.Services.Extensions {
     public static class ItemQueryHelper {

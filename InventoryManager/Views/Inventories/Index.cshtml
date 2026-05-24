@@ -11,6 +11,7 @@
         ViewType.Shared => "Shared Inventories",
         _ => "All Inventories"
     };
+    var canEdit = User.IsInRole("Admin") || Model.ViewType == ViewType.My;
 }
 
 <div class="container-fluid">
@@ -24,7 +25,7 @@
             <div class="col-12 col-sm">
                 <h3 class="mb-0">@ViewData["Title"]</h3>
             </div>
-            @if(User.Identity?.IsAuthenticated ?? false) { 
+            @if(canEdit) { 
                 <div class="col-12 col-sm-auto">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-secondary" onclick="createInventory()">
@@ -60,9 +61,11 @@
         <table class="table table-borderless">
             <thead>
                 <tr>
-                    <th style="width: 40px;">
-                        <input type="checkbox" class="form-check-input" id="selectAll">
-                    </th>
+                    @if(canEdit) {
+                        <th style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                    }
                     <th>
                         <button type="button" onclick="sort('name', '@(ChangeSortOrder("name"))')" class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold">
                             Name
@@ -95,11 +98,13 @@
                 @if(Model.Inventories.Elements.Any()) {
                     @foreach(var inventory in Model.Inventories.Elements) {
                         <tr>
-                            <td onclick="event.stopPropagation()">
-                                <input type="checkbox" class="form-check-input item-select" value="@inventory.Basic.Id">
-                            </td>
+                             @if(canEdit) {
+                                <td onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="form-check-input item-select" value="@inventory.Basic.Id">
+                                </td>
+                             }
                             <td>
-                                <a href="@Url.Action("Details", new { inventoryId = inventory.Basic.Id })">
+                                <a class="text-decoration-none" href="@Url.Action("Details", new { inventoryId = inventory.Basic.Id })">
                                     @inventory.Basic.Name
                                 </a>
                             </td>
@@ -154,7 +159,7 @@
 <script>
     const selectAllCheckbox = document.getElementById('selectAll');
     const deleteForm = document.getElementById('deleteForm');
-
+    
     selectAllCheckbox?.addEventListener('change', function() {
         document.querySelectorAll('.item-select').forEach(cb => {
             cb.checked = selectAllCheckbox.checked;

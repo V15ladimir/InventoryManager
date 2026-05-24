@@ -4,11 +4,11 @@
 @model ItemFormViewModel
 @{
     var isEdit = Model.Id > 0;
-    var title = isEdit ? "Edit Item" : "Create New Item";
-    ViewData["Title"] = title;
 }
 
-<form method="post" asp-action="@(isEdit ? "Update" : "Create")">
+<form hx-post="@Url.Action(isEdit ? "Edit" : "Create", "Items")"
+    hx-target="#itemsContainer"
+    hx-swap="innerHTML">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="InventoryId" />
@@ -17,20 +17,14 @@
     <input type="hidden" asp-for="PagedRequest.Page" />
     <input type="hidden" asp-for="PagedRequest.PageSize" />
     <input type="hidden" asp-for="PagedRequest.SearchText" />
-    <div class="mb-4">
-        <h3>@title</h3>
-    </div>
-    
     <div class="mb-3">
         <label class="form-label">Custom ID</label>
         <input asp-for="CustomId" class="form-control" />
         <div class="form-text">Auto-generated, but you can edit it</div>
     </div>
-    
     @foreach(var field in Model.Fields) 
     {
         var value = Model.FieldValues.ContainsKey(field.Id) ? Model.FieldValues[field.Id] : "";
-        
         <div class="mb-3">
             <label class="form-label">
                 @field.Name
@@ -55,7 +49,6 @@
                               rows="3"
                               @(field.State == FieldState.Required ? "required" : "")>@value</textarea>
                     break;
-                    
                 case FieldType.Number:
                     <input type="number"
                            name="FieldValues[@field.Id]"
@@ -64,7 +57,6 @@
                            value="@value"
                            @(field.State == FieldState.Required ? "required" : "") />
                     break;
-                    
                 case FieldType.Link:
                     <input type="url"
                            name="FieldValues[@field.Id]"
@@ -73,7 +65,6 @@
                            value="@value"
                            @(field.State == FieldState.Required ? "required" : "") />
                     break;
-                    
                 case FieldType.Boolean:
                     var isChecked = value == "true";
                     <div class="form-check">
@@ -87,7 +78,6 @@
                     </div>
                     break;
             }
-            
             @if(!string.IsNullOrEmpty(field.Description)) 
             {
                 <div class="form-text">
@@ -102,14 +92,20 @@
     }
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">@(isEdit ? "Save" : "Create") Item</button>
-        <a asp-action="Index" 
-            asp-route-inventoryId="@Model.InventoryId"
-            asp-route-sortBy="@Model.PagedRequest?.SortBy"
-            asp-route-sortOrder="@Model.PagedRequest?.SortOrder"
-            asp-route-page="@Model.PagedRequest?.Page"
-            asp-route-pageSize="@Model.PagedRequest?.PageSize"
-            asp-route-searchText="@Model.PagedRequest?.SearchText"
-            class="btn btn-secondary">Cancel</a>
+        <button type="button" 
+                class="btn btn-secondary"
+                hx-get="@Url.Action("Index", "Items", new {
+                    inventoryId = Model.InventoryId,
+                    page = Model.PagedRequest?.Page,
+                    pageSize = Model.PagedRequest?.PageSize,
+                    sortBy = Model.PagedRequest?.SortBy,
+                    sortOrder = Model.PagedRequest?.SortOrder,
+                    searchText = Model.PagedRequest?.SearchText
+                })"
+                hx-target="#itemsContainer"
+                hx-swap="innerHTML">
+            Cancel
+        </button>
     </div>
 </form>
 <script>

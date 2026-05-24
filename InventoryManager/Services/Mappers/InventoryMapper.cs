@@ -174,6 +174,7 @@ namespace InventoryManager.Services.Mappers {
 
         public static ItemsIndexViewModel ToItemsIndexViewModel(
             this InventoryDto inventory, 
+            bool hasSuperAccess,
             List<InventoryCategoryDto> categories,
             List<InventoryIdPartDto> parts,
             List<InventoryFieldDto> fields,
@@ -183,7 +184,8 @@ namespace InventoryManager.Services.Mappers {
                 InventoryId = inventory.InventoryId,
                 Settings = details.ToInventorySettingsViewModel(inventory.InventoryId, categories, pagedrequest),
                 Parts = parts.ToCustomIdPartsViewModel(inventory),
-                Fields = fields.ToCustomIdFieldsViewModel(inventory)
+                Fields = fields.ToCustomIdFieldsViewModel(inventory),
+                HasSuperAccess = hasSuperAccess
             };
         }
     }

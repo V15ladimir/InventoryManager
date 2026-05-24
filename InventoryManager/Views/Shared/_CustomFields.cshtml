@@ -6,17 +6,17 @@
 
 <form id="customFieldsForm" method="post" asp-action="UpdateCustomFields" asp-controller="Inventories">
     @Html.AntiForgeryToken()
-    <div class="mt-2">
+    <div class="mt-3">
         <input type="hidden" name="InventoryId" value="@inventoryId" />
         <div id="fieldsContainer">
-            <span id="fieldsSaveIndicator" class="badge bg-secondary">Autosave enabled</span>
+            <span id="fieldsSaveIndicator" class="badge bg-secondary mb-3">Autosave enabled</span>
             @if(Model != null && Model.CustomFields.Any()) {
                 @foreach(var field in Model.CustomFields.OrderBy(x => x.Order)) {
                     @await Html.PartialAsync("_CustomField", field)
                 }
             }
         </div>
-        <div class="mt-2">
+        <div class="mt-3">
             <button type="button" class="btn btn-primary" onclick="saveFields()" id="manualSaveBtn">
                 Save
             </button>

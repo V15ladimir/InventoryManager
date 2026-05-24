@@ -38,7 +38,7 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static InventoryItemsViewModel ToViewModel(this InventoryItemsDto items) {
+        public static InventoryItemsViewModel ToViewModel(this InventoryItemsDto items, bool hasSuperAccess) {
             return new InventoryItemsViewModel {
                 InventoryId = items.InventoryId,
                 Fields = [.. items.Fields.Select(x => x.ToViewModel2())],
@@ -50,7 +50,8 @@ namespace InventoryManager.Services.Mappers {
                     items.Items.SortBy,
                     items.Items.SortOrder,
                     items.Items.SearchText
-                )
+                ),
+                HasSuperAccess = hasSuperAccess
             };
         }
 

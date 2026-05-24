@@ -2,7 +2,7 @@
 @using InventoryManager.Models.Enums
 @model InventoryFieldViewModel
 
-<div class="card mt-2 field-item" data-field-order="@Model.Order">
+<div class="card mb-2 field-item" data-field-order="@Model.Order">
     <div class="card-body">
         <div class="d-flex justify-content-between mb-2">
             <span class="drag-handle" style="cursor:grab">
@@ -14,7 +14,6 @@
         <input type="hidden" name="CustomFields[@Model.Order].Id" value="@Model.Id" />
         <input type="hidden" name="CustomFields[@Model.Order].Order" value="@Model.Order" />
         <input type="hidden" name="CustomFields[@Model.Order].Type" value="@((int)Model.Type)" />
-        
         <div class="row">
             <div class="col-md-3">
                 <input name="CustomFields[@Model.Order].Name"

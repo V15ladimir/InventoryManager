@@ -20,17 +20,5 @@ namespace InventoryManager.Utilities.Pagination {
                 pagedRequest.SearchText
             );
         }
-
-        public static PagedList<T> CreateEmpty<T>(PagedRequest pagedRequest) {
-            return new PagedList<T>(
-                [],
-                pagedRequest.Page,
-                pagedRequest.PageSize,
-                0,
-                pagedRequest.SortBy,
-                pagedRequest.SortOrder,
-                pagedRequest.SearchText
-            );
-        }
     }
 }

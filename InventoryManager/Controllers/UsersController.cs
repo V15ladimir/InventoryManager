@@ -3,5 +3,7 @@
 namespace InventoryManager.Controllers {
 
     public class UsersController() : Controller {
+
+
     }
 }

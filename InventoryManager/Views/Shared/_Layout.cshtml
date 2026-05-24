@@ -24,53 +24,67 @@
                     <div class="collapse navbar-collapse" id="navbarMain">
                         <ul class="navbar-nav me-auto mb-2 mb-md-0">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Dashboard</a>
                             </li>
-                            @if(User.Identity?.IsAuthenticated ?? false) {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" data-bs-toggle="dropdown">
-                                        Inventories
-                                    </a>
-                                    <ul class="dropdown-menu shadow-sm">
-                                        <li>
-                                            <a class="dropdown-item" asp-controller="Inventories" asp-route-viewType="@ViewType.All">
-                                                <span>All Inventories</span>
-                                                <small class="text-muted d-block">Browse all public inventories</small>
-                                            </a>
-                                        </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" data-bs-toggle="dropdown">
+                                    Inventories
+                                </a>
+                                <ul class="dropdown-menu shadow-sm">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Inventories" asp-action="Index" asp-route-viewType="@ViewType.All">
+                                            <span>All Inventories</span>
+                                            <small class="text-muted d-block">Browse all inventories</small>
+                                        </a>
+                                    </li>
+                                    @if(User.Identity?.IsAuthenticated ?? false) {
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <a class="dropdown-item" asp-controller="Inventories" asp-route-viewType="@ViewType.My">
+                                            <a class="dropdown-item" asp-controller="Inventories" asp-action="Index" asp-route-viewType="@ViewType.My">
                                                 <span>My Inventories</span>
                                                 <small class="text-muted d-block">I own and manage</small>
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" asp-controller="Inventories" asp-route-viewType="@ViewType.Shared">
+                                            <a class="dropdown-item" asp-controller="Inventories" asp-action="Index" asp-route-viewType="@ViewType.Shared">
                                                 <span>Shared with Me</span>
                                                 <small class="text-muted d-block">I have write access</small>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                            @if(User.IsInRole("Admin")) {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" data-bs-toggle="dropdown">
+                                        Admin
+                                    </a>
+                                    <ul class="dropdown-menu shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Inventories" asp-action="Index" asp-route-viewType="@ViewType.All">
+                                                <span>All Inventories</span>
+                                                <small class="text-muted d-block">Browse all inventories</small>
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
                             }
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
 			            </ul>
-                        <form asp-controller="Search" asp-action="Index" method="get" class="d-flex mx-auto my-2 my-md-0 w-100 w-md-auto">
-                            <div class="input-group" style="min-width: 200px;">
-                                <input class="form-control border-secondary"
-                                    type="search"
-                                    name="globalSearch"
-                                    placeholder="Search..."
-                                    value="@Context.Request.Query["globalSearch"]">
-                                <button class="btn btn-outline-secondary" type="submit">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-			            </form>
                         <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <form asp-controller="Search" asp-action="Index" method="get" class="d-flex">
+                                    <div class="input-group">
+                                        <input class="form-control border-secondary"
+                                            type="search"
+                                            name="globalSearch"
+                                            placeholder="Search..."
+                                            value="@Context.Request.Query["globalSearch"]">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+			                    </form>
+                            </li>
                             @await Html.PartialAsync("_LoginPartial")
                         </ul>
                     </div>

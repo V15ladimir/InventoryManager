@@ -2,13 +2,13 @@
 @using InventoryManager.Models.Enums
 @model InventoryIdPartViewModel
 
-<div class="card mt-2 part-item" data-order="@Model.Order">
+<div class="card mb-2 part-item" data-order="@Model.Order">
     <div class="card-body">
         <div class="d-flex justify-content-between mb-2">
-            <strong class="drag-handle" style="cursor:grab">
+            <span class="drag-handle" style="cursor:grab">
                 <i class="bi bi-grip-vertical"></i>
                 @GetTypeName(Model.Type)
-            </strong>
+            </span>
             <button type="button" class="btn-close" onclick="removePart(this)"></button>
         </div>
         <input type="hidden" name="CustomIdParts[@Model.Order].Id" value="@Model.Id" />

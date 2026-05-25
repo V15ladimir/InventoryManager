@@ -1,6 +1,4 @@
-﻿using InventoryManager.Models.ViewModels.Inventories.Form;
-
-namespace InventoryManager.Models.ViewModels.Inventories.Shared {
+﻿namespace InventoryManager.Models.ViewModels.Inventories {
 
     public class InventoryCustomIdPartsViewModel {
         public int InventoryId { get; set; }

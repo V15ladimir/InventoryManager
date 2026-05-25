@@ -1,7 +1,7 @@
-﻿using InventoryManager.Models.ViewModels.Inventories.Shared;
+﻿using InventoryManager.Models.ViewModels.Inventories;
 using InventoryManager.Utilities.Pagination;
 
-namespace InventoryManager.Models.ViewModels.Items.Form {
+namespace InventoryManager.Models.ViewModels.Items {
 
     public class ItemFormViewModel {
         public int Id { get; set; }

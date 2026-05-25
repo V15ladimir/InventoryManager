@@ -3,8 +3,7 @@ using InventoryManager.Exceptions;
 using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites.Custom;
 using InventoryManager.Models.Entitites.Inventories;
-using InventoryManager.Models.ViewModels.Inventories.Index;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
+using InventoryManager.Models.ViewModels.Inventories;
 using InventoryManager.Services.Extensions;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
@@ -122,7 +121,7 @@ namespace InventoryManager.Services {
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateCustomFieldsAsync(int inventoryId, InventoryCustomFieldsViewModel fieldsDto) {
+        public async Task<List<InventoryFieldDto>> UpdateCustomFieldsAsync(int inventoryId, InventoryCustomFieldsViewModel fieldsDto) {
             var fields = await GetFieldsAsync(inventoryId);
             var fieldIds = fields.ToDictionary(f => f.Id);
             var fieldsToCreate = new List<Field>();
@@ -141,6 +140,8 @@ namespace InventoryManager.Services {
             context.Fields.RemoveRange(fieldIds.Values);
             context.Fields.AddRange(fieldsToCreate);
             await context.SaveChangesAsync();
+            var newFields = await GetFieldsAsync(inventoryId);
+            return newFields.Select(x => x.ToDto()).ToList();
         }
 
         public async Task<int> DeleteInventoryAsync(List<int> inventoryIds) {

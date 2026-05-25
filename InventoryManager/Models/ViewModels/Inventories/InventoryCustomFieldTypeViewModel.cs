@@ -1,6 +1,6 @@
 ﻿using InventoryManager.Models.Enums;
 
-namespace InventoryManager.Models.ViewModels.Inventories.Shared {
+namespace InventoryManager.Models.ViewModels.Inventories {
 
     public class InventoryCustomFieldTypeViewModel {
         public FieldType Type { get; set; }

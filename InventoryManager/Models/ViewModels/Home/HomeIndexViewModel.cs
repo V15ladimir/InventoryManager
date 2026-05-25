@@ -1,6 +1,6 @@
-﻿using InventoryManager.Models.ViewModels.Inventories.Index;
+﻿using InventoryManager.Models.ViewModels.Inventories;
 
-namespace InventoryManager.Models.ViewModels.Home.Index {
+namespace InventoryManager.Models.ViewModels.Home {
 
     public class HomeIndexViewModel {
         public List<InventoryViewModel> LatestInventories { get; set; } = [];

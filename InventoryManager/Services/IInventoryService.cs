@@ -1,7 +1,6 @@
 ﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites.Inventories;
-using InventoryManager.Models.ViewModels.Inventories.Index;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
+using InventoryManager.Models.ViewModels.Inventories;
 using InventoryManager.Utilities.Pagination;
 
 namespace InventoryManager.Services {
@@ -17,7 +16,7 @@ namespace InventoryManager.Services {
         Task<Inventory> CreateInventoryAsync(CreateInventoryDto inventoryDto);
         Task<Inventory> UpdateInventoryAsync(UpdateInventoryDto inventoryDto);
         Task UpdateCustomIdPartsAsync(int inventoryId, InventoryCustomIdPartsViewModel parts);
-        Task UpdateCustomFieldsAsync(int inventoryId, InventoryCustomFieldsViewModel fields);
+        Task<List<InventoryFieldDto>> UpdateCustomFieldsAsync(int inventoryId, InventoryCustomFieldsViewModel fields);
         Task UpdateInventoryAccessAsync(UpdateInventoryAccessDto access);
         Task<int> DeleteInventoryAsync(List<int> inventoryIds);
         Task<List<InventoryIdPartDto>> GetInventoryIdPartsAsync(int inventoryId);

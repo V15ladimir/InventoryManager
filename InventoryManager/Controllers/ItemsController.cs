@@ -1,5 +1,5 @@
 ﻿using InventoryManager.Models.Entitites;
-using InventoryManager.Models.ViewModels.Items.Form;
+using InventoryManager.Models.ViewModels.Items;
 using InventoryManager.Services;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;

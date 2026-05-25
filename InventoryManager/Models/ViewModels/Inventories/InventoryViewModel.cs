@@ -1,4 +1,4 @@
-﻿namespace InventoryManager.Models.ViewModels.Inventories.Index {
+﻿namespace InventoryManager.Models.ViewModels.Inventories {
 
     public class InventoryViewModel {
         public InventoryBasicViewModel Basic { get; set; } = new();

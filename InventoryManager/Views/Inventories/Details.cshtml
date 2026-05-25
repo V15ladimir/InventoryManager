@@ -1,4 +1,4 @@
-﻿@using InventoryManager.Models.ViewModels.Items.Index
+﻿@using InventoryManager.Models.ViewModels.Items
 @model ItemsIndexViewModel
 @{
     ViewData["Title"] = $"Inventory page";
@@ -102,7 +102,7 @@
 <script src="~/js/custom-id-parts.js"></script>
 <script src="~/js/custom-fields.js"></script>
 <script src="~/js/discussions.js"></script>
-<script>
+@* <script>
     const itemsTabButton = document.querySelector('button[data-bs-target="#items"]');
     if (itemsTabButton) {
         itemsTabButton.addEventListener('shown.bs.tab', () => {
@@ -113,4 +113,4 @@
             });
         });
     }
-</script>
+</script> *@

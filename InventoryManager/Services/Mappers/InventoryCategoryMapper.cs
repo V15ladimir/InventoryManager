@@ -1,5 +1,5 @@
 ﻿using InventoryManager.Models.Dto;
-using InventoryManager.Models.ViewModels.Inventories.Form;
+using InventoryManager.Models.ViewModels.Inventories;
 
 namespace InventoryManager.Services.Mappers {
 

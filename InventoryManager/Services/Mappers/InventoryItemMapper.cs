@@ -1,8 +1,7 @@
 ﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites.Custom;
 using InventoryManager.Models.Entitites.Items;
-using InventoryManager.Models.ViewModels.Items.Form;
-using InventoryManager.Models.ViewModels.Items.Index;
+using InventoryManager.Models.ViewModels.Items;
 using InventoryManager.Utilities.Pagination;
 
 namespace InventoryManager.Services.Mappers {

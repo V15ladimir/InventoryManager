@@ -1,6 +1,7 @@
 ﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites.Custom;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
+using InventoryManager.Models.Enums;
+using InventoryManager.Models.ViewModels.Inventories;
 
 namespace InventoryManager.Services.Mappers {
 
@@ -30,9 +31,9 @@ namespace InventoryManager.Services.Mappers {
 
         public static InventoryCustomFieldsViewModel ToFieldsViewModel(
             this List<InventoryFieldDto> fields,
-            InventoryDto inventory) {
+            int inventoryId) {
             return new InventoryCustomFieldsViewModel {
-                InventoryId = inventory.InventoryId,
+                InventoryId = inventoryId,
                 CustomFields = [.. fields.Select(x => x.ToViewModel())]
             };
         }
@@ -55,5 +56,26 @@ namespace InventoryManager.Services.Mappers {
                 Name = field.Name
             };
         }
+
+        public static Field ToEntity(this InventoryFieldViewModel field, int inventoryId) {
+            return field.Type switch {
+                FieldType.SingleLine => field.MapToField<SinglelineField>(inventoryId),
+                FieldType.MultiLine => field.MapToField<MultilineField>(inventoryId),
+                FieldType.Number => field.MapToField<NumberField>(inventoryId),
+                FieldType.Link => field.MapToField<LinkField>(inventoryId),
+                FieldType.Boolean => field.MapToField<BooleanField>(inventoryId),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        private static T MapToField<T>(this InventoryFieldViewModel field, int inventoryId) where T : Field, new() => new() {
+            Id = field.Id,
+            InventoryId = inventoryId,
+            Order = field.Order,
+            Name = field.Name,
+            Description = field.Description,
+            FieldType = field.Type,
+            FieldState = field.State
+        };
     }
 }

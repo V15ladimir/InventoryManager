@@ -1,7 +1,6 @@
-﻿using InventoryManager.Models.ViewModels.Inventories.Form;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
+﻿using InventoryManager.Models.ViewModels.Inventories;
 
-namespace InventoryManager.Models.ViewModels.Items.Index {
+namespace InventoryManager.Models.ViewModels.Items {
 
     public class ItemsIndexViewModel {
         public int InventoryId { get; set; }

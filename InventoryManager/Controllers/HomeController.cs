@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using InventoryManager.Models;
-using InventoryManager.Models.ViewModels.Home.Index;
+using InventoryManager.Models.ViewModels.Home;
 using InventoryManager.Services;
 using Microsoft.AspNetCore.Mvc;
 

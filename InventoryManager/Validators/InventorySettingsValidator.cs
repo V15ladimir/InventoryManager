@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using InventoryManager.Models.ViewModels.Inventories.Form;
+using InventoryManager.Models.ViewModels.Inventories;
 
 namespace InventoryManager.Validators {
 

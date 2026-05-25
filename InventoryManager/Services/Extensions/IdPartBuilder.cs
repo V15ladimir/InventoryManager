@@ -1,6 +1,6 @@
 ﻿using InventoryManager.Models.Entitites.Custom;
 using InventoryManager.Models.Enums;
-using InventoryManager.Models.ViewModels.Inventories.Form;
+using InventoryManager.Models.ViewModels.Inventories;
 using InventoryManager.Utilities;
 
 namespace InventoryManager.Services.Extensions {

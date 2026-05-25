@@ -1,15 +1,6 @@
 ﻿using InventoryManager.Models.Enums;
 
-namespace InventoryManager.Models.ViewModels.Inventories.Form {
-
-    //public record InventoryIdPartViewModel(
-    //    int Order,
-    //    string? Text, 
-    //    string? Format,
-    //    int? NumberWidth,
-    //    bool? UseHex,
-    //    IdType Type
-    //);
+namespace InventoryManager.Models.ViewModels.Inventories {
 
     public class InventoryIdPartViewModel {
         public int Id { get; set; }

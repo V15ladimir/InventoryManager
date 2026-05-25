@@ -1,15 +1,12 @@
-﻿@using InventoryManager.Models.ViewModels.Inventories.Shared
+﻿@using InventoryManager.Models.ViewModels.Inventories
 @model InventoryCustomFieldsViewModel
-@{
-    var inventoryId = ViewData["InventoryId"];
-}
 
 <form id="customFieldsForm" method="post" asp-action="UpdateCustomFields" asp-controller="Inventories">
     @Html.AntiForgeryToken()
     <div class="mt-3">
-        <input type="hidden" name="InventoryId" value="@inventoryId" />
+        <input type="hidden" name="InventoryId" value="@Model.InventoryId" />
+        <span id="fieldsSaveIndicator" class="badge bg-secondary mb-3">Autosave enabled</span>
         <div id="fieldsContainer">
-            <span id="fieldsSaveIndicator" class="badge bg-secondary mb-3">Autosave enabled</span>
             @if(Model != null && Model.CustomFields.Any()) {
                 @foreach(var field in Model.CustomFields.OrderBy(x => x.Order)) {
                     @await Html.PartialAsync("_CustomField", field)

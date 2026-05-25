@@ -28,23 +28,25 @@ async function saveFields() {
             body: formData
         });
         if (response.ok && indicator) {
-            indicator.innerHTML = 'Saved';
-            indicator.className = 'badge bg-success mb-3';
+            const html = await response.text();
+            updateFieldsForm(html); 
+            const newIndicator = document.getElementById('fieldsSaveIndicator');
+            newIndicator.innerHTML = 'Saved';
+            newIndicator.className = 'badge bg-success mb-3';
             setTimeout(() => {
-                indicator.innerHTML = 'Autosave enabled';
-                indicator.className = 'badge bg-secondary mb-3';
-            }, 2000);
-        } else if (response.status === 400) {
+                newIndicator.innerHTML = 'Autosave enabled';
+                newIndicator.className = 'badge bg-secondary mb-3';
+            }, 7000);
+        } else {
             const html = await response.text();
             updateFieldsForm(html);
-            if (indicator) {
-                indicator.innerHTML = 'Please fix errors';
-                indicator.className = 'badge bg-danger mb-3';
-                setTimeout(() => {
-                    indicator.innerHTML = 'Autosave enabled';
-                    indicator.className = 'badge bg-secondary mb-3';
-                }, 3000);
-            }
+            const newIndicator = document.getElementById('fieldsSaveIndicator');
+            newIndicator.innerHTML = 'Error';
+            newIndicator.className = 'badge bg-danger mb-3';
+            setTimeout(() => {
+                newIndicator.innerHTML = 'Autosave enabled';
+                newIndicator.className = 'badge bg-secondary mb-3';
+            }, 7000);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -59,6 +61,7 @@ function updateFieldsForm(html) {
     if (newForm) {
         const currentForm = document.getElementById('customFieldsForm');
         currentForm.innerHTML = newForm.innerHTML;
+        reindexFields();
         initFieldSortable();
     }
 }
@@ -66,7 +69,6 @@ function updateFieldsForm(html) {
 function reindexFields() {
     document.querySelectorAll('.field-item').forEach((el, newOrder) => {
         el.setAttribute('data-field-order', newOrder);
-
         el.querySelectorAll('input, select, textarea').forEach(input => {
             if (input.name) {
                 input.name = input.name.replace(/CustomFields\[\d+\]/, `CustomFields[${newOrder}]`);
@@ -79,10 +81,10 @@ function reindexFields() {
             orderInput.name = `CustomFields[${newOrder}].Order`;
         }
 
-        const typeInput = el.querySelector('input[name$=".Type"]');
-        if (typeInput) {
-            typeInput.name = `CustomFields[${newOrder}].Type`;
-        }
+        //const typeInput = el.querySelector('input[name$=".Type"]');
+        //if (typeInput) {
+        //    typeInput.name = `CustomFields[${newOrder}].Type`;
+        //}
     });
 }
 

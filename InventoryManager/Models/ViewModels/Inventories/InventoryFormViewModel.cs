@@ -1,8 +1,7 @@
-﻿using InventoryManager.Models.ViewModels.Inventories.Shared;
-using InventoryManager.Utilities.Pagination;
+﻿using InventoryManager.Utilities.Pagination;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-namespace InventoryManager.Models.ViewModels.Inventories.Form {
+namespace InventoryManager.Models.ViewModels.Inventories {
 
     public record InventoryFormViewModel(
         InventorySettingsViewModel Settings,

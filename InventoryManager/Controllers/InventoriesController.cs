@@ -1,11 +1,8 @@
 ﻿using FluentValidation;
 using InventoryManager.Models.Entitites;
-using InventoryManager.Models.Entitites.Inventories;
 using InventoryManager.Models.Enums;
-using InventoryManager.Models.ViewModels.Inventories.Form;
-using InventoryManager.Models.ViewModels.Inventories.Index;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
-using InventoryManager.Models.ViewModels.Items.Index;
+using InventoryManager.Models.ViewModels.Inventories;
+using InventoryManager.Models.ViewModels.Items;
 using InventoryManager.Services;
 using InventoryManager.Services.Extensions;
 using InventoryManager.Services.Mappers;
@@ -59,8 +56,8 @@ namespace InventoryManager.Controllers {
             return View(new ItemsIndexViewModel {
                 InventoryId = inventoryId,
                 Settings = inventory.ToViewModel(categories, pagedRequest),
-                Parts = parts.ToViewModel(inventory),
-                Fields = fields.ToFieldsViewModel(inventory),
+                Parts = parts.ToViewModel(inventoryId),
+                Fields = fields.ToFieldsViewModel(inventoryId),
                 HasSuperAccess = hasSuperAccess
             });
         }
@@ -120,8 +117,9 @@ namespace InventoryManager.Controllers {
                 validation.AddToModelState(this.ModelState);
             if(!ModelState.IsValid)
                 return BadRequest(PartialView("_CustomFields", fields));
-            await inventoryService.UpdateCustomFieldsAsync(fields.InventoryId, fields);
-            return PartialView("_CustomFields", fields);
+            var newFields = await inventoryService.UpdateCustomFieldsAsync(fields.InventoryId, fields);
+            var result = newFields.ToFieldsViewModel(fields.InventoryId);
+            return PartialView("_CustomFields", result);
         }
 
         [HttpPost]

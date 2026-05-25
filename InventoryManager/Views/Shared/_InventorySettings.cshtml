@@ -1,4 +1,4 @@
-﻿@using InventoryManager.Models.ViewModels.Inventories.Form
+﻿@using InventoryManager.Models.ViewModels.Inventories
 @model InventorySettingsViewModel
 @{
     var isEditMode = Model.InventoryId > 0;
@@ -24,7 +24,7 @@
         }
         <div class="mt-3">
             <div class="mb-2">
-                <label class="fw-semibold">Name</label>
+                <label>Name</label>
                 <input asp-for="Details.InventoryName"
                     class="form-control"
                     hx-post="@savePost"
@@ -34,7 +34,7 @@
                 <span asp-validation-for="Details.InventoryName" class="text-danger"></span>
             </div>
             <div class="mb-2">
-                <label class="fw-semibold">Description</label>
+                <label>Description</label>
                 <textarea asp-for="Details.InventoryDescription"
                     class="form-control"
                     rows="5"
@@ -45,7 +45,7 @@
                 <span asp-validation-for="Details.InventoryDescription" class="text-danger"></span>
             </div>
             <div class="mb-2">
-                <label class="fw-semibold">Category</label>
+                <label>Category</label>
                 <select asp-for="Details.InventoryCategoryId"
                     class="form-select"
                     hx-post="@savePost"

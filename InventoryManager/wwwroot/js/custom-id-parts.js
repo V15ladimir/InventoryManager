@@ -25,7 +25,7 @@ async function saveParts() {
     const indicator = document.getElementById('partsSaveIndicator');
     if (indicator) {
         indicator.innerHTML = 'Saving...';
-        indicator.className = 'badge bg-warning text-dark';
+        indicator.className = 'badge bg-warning text-dark mb-3';
     }
 
     try {
@@ -39,7 +39,7 @@ async function saveParts() {
             indicator.className = 'badge bg-success mb-3';
             setTimeout(() => {
                 indicator.innerHTML = 'Autosave enabled';
-                indicator.className = 'badge bg-secondary';
+                indicator.className = 'badge bg-secondary mb-3';
             }, 2000);
         } else {
             const html = await response.text();
@@ -49,7 +49,7 @@ async function saveParts() {
                 indicator.className = 'badge bg-danger mb-3';
                 setTimeout(() => {
                     indicator.innerHTML = 'Autosave enabled';
-                    indicator.className = 'badge bg-secondary';
+                    indicator.className = 'badge bg-secondary mb-3';
                 }, 3000);
             }
         }

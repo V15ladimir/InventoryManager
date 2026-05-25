@@ -177,7 +177,6 @@ namespace InventoryManager.Data {
             foreach(var itemData in items) {
                 sequence++;
                 var customId = $"EQ-{sequence:D4}-{DateTime.UtcNow:yyyy}";
-
                 var item = new Item {
                     InventoryId = inventoryId,
                     CustomId = customId,
@@ -187,8 +186,6 @@ namespace InventoryManager.Data {
                     ItemValues = values
                 };
                 item.SearchText = ItemSearchBuilder.Build(item);
-
-
                 await context.Items.AddAsync(item);
             }
 

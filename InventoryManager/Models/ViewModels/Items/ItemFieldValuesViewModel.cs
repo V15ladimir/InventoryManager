@@ -1,4 +1,4 @@
-﻿namespace InventoryManager.Models.ViewModels.Items.Index {
+﻿namespace InventoryManager.Models.ViewModels.Items {
 
     public class ItemFieldValuesViewModel {
         public int Id { get; set; }

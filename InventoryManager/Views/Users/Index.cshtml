@@ -1,5 +1,214 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@using InventoryManager.Models.ViewModels.Users
+@model UsersIndexViewModel
+
+<div class="container-fluid">
+    <div hx-target="#usersContainer" hx-swap="innerHTML">
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-12 col-sm">
+                <p>All inventory items</p>
+            </div>
+            <div class="col-12 col-sm-auto">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-secondary"
+                            hx-get="@Url.Action("Create", "Users", new {
+                                page = Model.Users.PageIndex,
+                                pageSize = Model.Users.PageSize,
+                                sortBy = Model.Users.SortBy,
+                                sortOrder = Model.Users.SortOrder,
+                                searchText = Model.Users.SearchText
+                            })"
+                            hx-target="#usersContainer"
+                            hx-swap="innerHTML">
+                        Create
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            hx-delete="@Url.Action("Delete", "Users", new { userId = 0 })"
+                            hx-confirm="Delete selected items?"
+                            hx-target="#usersContainer"
+                            hx-swap="innerHTML"
+                            hx-vals='js:{itemIds: getSelectedIds()}'>
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-12 col-sm-auto">
+                <div class="input-group">
+                    <input type="text" name="searchText" class="form-control border-secondary"
+                           value="@Model.Users.SearchText"
+                           placeholder="Filter..."
+                           hx-get="@Url.Action("Index", "Users")"
+                           hx-target="#usersContainer"
+                           hx-swap="innerHTML"
+                           hx-trigger="keyup changed delay:500ms"
+                           hx-include="[name='inventoryId'], [name='pageSize'], [name='sortBy'], [name='sortOrder']" />
+                    <button class="btn btn-secondary"
+                            hx-get="@Url.Action("Index", "Users")"
+                            hx-target="#usersContainer"
+                            hx-swap="innerHTML"
+                            hx-include="[name='inventoryId'], [name='searchText'], [name='pageSize'], [name='sortBy'], [name='sortOrder']">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 40px;">
+                        <input type="checkbox" class="form-check-input" id="selectAll">
+                    </th>
+                    <th scope="col">
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#usersContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
+                                hx-vals='js:{sortOrder: "@(Model.Users.SortBy == "username" && Model.Users.SortOrder == "asc" ? "desc" : "asc")"}'>
+                            Username
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#usersContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
+                                hx-vals='js:{sortOrder: "@(Model.Users.SortBy == "email" && Model.Users.SortOrder == "asc" ? "desc" : "asc")"}'>
+                            Email
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#usersContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText'], [name='sortBy'], [name='sortOrder']">
+                            Admin
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#usersContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText'], [name='sortBy'], [name='sortOrder']">
+                            Blocked
+                        </button>
+                    </th>
+                    <th scope="col">
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#usersContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
+                                hx-vals='js:{sortOrder: "@(Model.Users.SortBy == "created" && Model.Users.SortOrder == "asc" ? "desc" : "asc")"}'>
+                            Created
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Users.Elements.Any()) {
+                    @foreach(var user in Model.Users.Elements) {
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input item-select" value="@user.UserId">
+                            </td>
+                            <td>
+                                @user.Username
+                            </td>
+                            <td>
+                                @user.Email
+                            </td>
+                            <td>
+                                @user.IsAdmin
+                            </td>
+                            <td>
+                                @user.IsBlocked
+                            </td>
+                            <td>
+                                @user.CreatedAt
+                            </td>
+                        </tr>
+                    }
+                } else {
+                    <tr><td colspan="5" class="text-center">No data available</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+            <select id="pageSizeSelect"
+                    name="pageSize"
+                    class="form-select"
+                    style="width: 70px;"
+                    hx-get="@Url.Action("Index", "Users")"
+                    hx-target="#usersContainer"
+                    hx-swap="innerHTML"
+                    hx-include="[name='inventoryId'], [name='searchText'], [name='sortBy'], [name='sortOrder']"
+                    hx-vals='js:{page: 1}'>
+                <option value="10" selected="@(Model.Users.PageSize == 10)">10</option>
+                <option value="20" selected="@(Model.Users.PageSize == 20)">20</option>
+                <option value="50" selected="@(Model.Users.PageSize == 50)">50</option>
+                <option value="100" selected="@(Model.Users.PageSize == 100)">100</option>
+            </select>
+        </div>
+        @if(Model.Users.TotalPages > 1) {
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-secondary"
+                        hx-get="@Url.Action("Index", "Users")"
+                        hx-target="#usersContainer"
+                        hx-swap="innerHTML"
+                        hx-include="[name='inventoryId'], [name='pageSize'], [name='searchText'], [name='sortBy'], [name='sortOrder']"
+                        hx-vals='js:{page: @(Model.Users.PageIndex - 1)}'
+                    @(Model.Users.PageIndex == 1 ? "disabled" : "")>
+                    &lt;
+                </button>
+                <span class="px-2">
+                    <strong>@Model.Users.PageIndex</strong> / @Model.Users.TotalPages
+                </span>
+                <button class="btn btn-secondary"
+                        hx-get="@Url.Action("Index", "Users")"
+                        hx-target="#usersContainer"
+                        hx-swap="innerHTML"
+                        hx-include="[name='inventoryId'], [name='pageSize'], [name='searchText'], [name='sortBy'], [name='sortOrder']"
+                        hx-vals='js:{page: @(Model.Users.PageIndex + 1)}'
+                    @(Model.Users.PageIndex == Model.Users.TotalPages ? "disabled" : "")>
+                    &gt;
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    const selectAllCheckbox = document.getElementById('selectAll');
+    selectAllCheckbox?.addEventListener('change', function() {
+        document.querySelectorAll('.item-select').forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    function getSelectedId() {
+        const selected = Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => parseInt(cb.value));
+
+        if (selected.length !== 1) {
+            return null;
+        }
+
+        return selected[0];
+    }
+
+    function getSelectedIds() {
+        return Array.from(document.querySelectorAll('.item-select:checked'))
+            .map(cb => parseInt(cb.value));
 }
+</script>

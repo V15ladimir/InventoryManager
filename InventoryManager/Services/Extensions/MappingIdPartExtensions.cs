@@ -99,17 +99,7 @@ namespace InventoryManager.Services.Extensions {
             };
         }
 
-        public static InventoryIdPartViewModel ToViewModel(this InventoryIdPartDto inventory) {
-            return new InventoryIdPartViewModel {
-                Id = inventory.Id,
-                Order = inventory.Order,
-                Text = inventory.Text,
-                Format = inventory.Format,
-                NumberWidth = inventory.NumberWidth,
-                UseHex = inventory.UseHex,
-                Type = inventory.Type
-            };
-        }
+        
 
         private static FixedTextPart MapToFixedText(this InventoryIdPartViewModel response, int inventoryId) => new() {
             InventoryId = inventoryId,

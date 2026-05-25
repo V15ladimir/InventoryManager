@@ -51,6 +51,7 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomFieldsValidator>();

@@ -1,13 +1,17 @@
 ﻿using InventoryManager.Data;
+using InventoryManager.Models.Dto;
+using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryManager.Services {
 
-    public class UserService(ApplicationDbContext context) {
+    public class UserService(ApplicationDbContext context) : IUserService {
 
-        public async void Get(PagedRequest pagedRequest) {
-            await context.Users.AsNoTracking().ToPagedResponseAsync(pagedRequest);
+        public async Task<PagedList<UserDto>> Get(PagedRequest pagedRequest) {
+            return await context.Users.AsNoTracking()
+                .Select(x => x.ToDto(false, x.LockoutEnabled))
+                .ToPagedResponseAsync(pagedRequest);
         }
     }
 }

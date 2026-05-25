@@ -7,7 +7,7 @@ namespace InventoryManager.Models.Dto {
         public int Order { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public FieldType Type { get; set; }
-        public FieldState State { get; set; }
+        public FieldType FieldType { get; set; }
+        public FieldState FieldState { get; set; }
     }
 }

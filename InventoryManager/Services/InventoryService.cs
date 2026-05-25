@@ -88,7 +88,7 @@ namespace InventoryManager.Services {
         }
 
         public async Task<Inventory> CreateInventoryAsync(CreateInventoryDto inventoryDto) {
-            var inventory = inventoryDto.CreateEntity();
+            var inventory = inventoryDto.ToEntity();
             await context.Inventories.AddAsync(inventory);
             await context.SaveChangesAsync();
             return inventory;
@@ -97,14 +97,18 @@ namespace InventoryManager.Services {
         public async Task<Inventory> UpdateInventoryAsync(UpdateInventoryDto inventoryDto) {
             var inventory = await context.Inventories.FindAsync(inventoryDto.InventoryId) ??
                 throw new NotFoundException("Inventory not found");
-            inventoryDto.UpdateEntity(inventory);
+            inventory.Name = inventoryDto.InventoryName;
+            inventory.CategoryId = inventoryDto.InventoryCategoryId;
+            inventory.IsPublic = inventoryDto.IsPublicInventory;
+            inventory.Description = inventoryDto.InventoryDescription;
+            inventory.UpdatedAt = inventoryDto.UpdatedAt;
             await context.SaveChangesAsync();
             return inventory;
         }
 
         public async Task UpdateInventoryAccessAsync(UpdateInventoryAccessDto accessDto) {
             var _ = accessDto.HasAccess ? 
-                context.InventoryAccess.Add(accessDto.CreateEntity()) : 
+                context.InventoryAccess.Add(accessDto.ToEntity()) : 
                 context.InventoryAccess.Remove(await GetAccessAsync(accessDto.InventoryId, accessDto.UserId));
             await context.SaveChangesAsync();
         }
@@ -124,7 +128,11 @@ namespace InventoryManager.Services {
             var fieldsToCreate = new List<Field>();
             foreach(var field in fieldsDto.CustomFields) {
                 if(fieldIds.TryGetValue(field.Id, out var existing)) {
-                    existing.UpdateEntity(field);
+                    existing.Name = field.Name;
+                    existing.Description = field.Description;
+                    existing.Order = field.Order;
+                    existing.FieldState = field.State;
+                    existing.FieldType = field.Type;
                     fieldIds.Remove(existing.Id);
                 } else if(field.Id == 0) {
                     fieldsToCreate.Add(field.ToEntity(inventoryId));

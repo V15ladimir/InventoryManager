@@ -18,11 +18,6 @@ namespace InventoryManager.Controllers {
             });
         }
 
-        public IActionResult AccessDenied(string? returnUrl = null) {
-            ViewBag.ReturnUrl = returnUrl;
-            return View("AccessDenied");
-        }
-
         public IActionResult Privacy() {
             return View();
         }

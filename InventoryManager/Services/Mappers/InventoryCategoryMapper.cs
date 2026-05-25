@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using InventoryManager.Models.Dto;
+﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.ViewModels.Inventories.Form;
 
 namespace InventoryManager.Services.Mappers {

@@ -1,7 +1,7 @@
-﻿using System.Net;
-using InventoryManager.Data;
+﻿using InventoryManager.Data;
 using InventoryManager.Exceptions;
 using InventoryManager.Models.Dto;
+using InventoryManager.Models.Entitites.Items;
 using InventoryManager.Services.Extensions;
 using InventoryManager.Services.Mappers;
 using InventoryManager.Utilities.Pagination;
@@ -36,7 +36,7 @@ namespace InventoryManager.Services {
         public async Task<InventoryItemValuesDto> GetItemAsync(int itemId) {
             var item = await context.Items
                 .Include(x => x.ItemValues)
-                .FirstOrDefaultAsync(x => x.Id == itemId) ??
+                .FirstOrDefaultAsync(x => x.Id == itemId) ?? 
                 throw new NotFoundException("Item not found");
             return item.ToDto(item.ItemValues);
         }
@@ -48,11 +48,11 @@ namespace InventoryManager.Services {
             return customId;
         }
 
-        public async Task CreateItemAsync(CreateInventoryItemDto item) {
+        public async Task CreateItemAsync(CreateInventoryItemDto itemDto) {
             var nextSequence = await GenerateNextSequenceAsync();
-            var itemEntity = item.ToEntity(nextSequence);
-            itemEntity.SearchText = ItemSearchBuilder.Build(itemEntity);
-            await context.Items.AddAsync(itemEntity);
+            var item = itemDto.ToEntity(nextSequence);
+            item.SearchText = ItemSearchBuilder.Build(item);
+            await context.Items.AddAsync(item);
             await context.SaveChangesAsync();
         }
 
@@ -63,7 +63,11 @@ namespace InventoryManager.Services {
             context.ItemValues.RemoveRange(itemValues);
             var item = await context.Items.FindAsync(itemDto.ItemId) ?? 
                 throw new NotFoundException("Item not found");
-            item.UpdateEntity(nextSequence, itemDto);
+            item.CustomId = itemDto.CustomId ?? nextSequence.ToString();
+            item.ItemValues = [.. itemDto.FieldValues.Select(x => new ItemValue {
+                FieldId = x.Key,
+                Value = x.Value
+            })];
             await context.SaveChangesAsync();
         }
 

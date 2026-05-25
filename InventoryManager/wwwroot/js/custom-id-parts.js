@@ -36,7 +36,7 @@ async function saveParts() {
 
         if (response.ok && indicator) {
             indicator.innerHTML = 'Saved';
-            indicator.className = 'badge bg-success';
+            indicator.className = 'badge bg-success mb-3';
             setTimeout(() => {
                 indicator.innerHTML = 'Autosave enabled';
                 indicator.className = 'badge bg-secondary';
@@ -46,7 +46,7 @@ async function saveParts() {
             updateForm(html);
             if (indicator) {
                 indicator.innerHTML = 'Please fix errors';
-                indicator.className = 'badge bg-danger';
+                indicator.className = 'badge bg-danger mb-3';
                 setTimeout(() => {
                     indicator.innerHTML = 'Autosave enabled';
                     indicator.className = 'badge bg-secondary';

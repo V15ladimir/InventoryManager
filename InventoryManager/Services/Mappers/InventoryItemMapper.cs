@@ -1,12 +1,9 @@
 ﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites.Custom;
 using InventoryManager.Models.Entitites.Items;
-using InventoryManager.Models.ViewModels.Inventories.Shared;
 using InventoryManager.Models.ViewModels.Items.Form;
 using InventoryManager.Models.ViewModels.Items.Index;
 using InventoryManager.Utilities.Pagination;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace InventoryManager.Services.Mappers {
 
@@ -38,7 +35,9 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static InventoryItemsViewModel ToViewModel(this InventoryItemsDto items, bool hasSuperAccess) {
+        public static InventoryItemsViewModel ToViewModel(
+            this InventoryItemsDto items, 
+            bool hasSuperAccess) {
             return new InventoryItemsViewModel {
                 InventoryId = items.InventoryId,
                 Fields = [.. items.Fields.Select(x => x.ToViewModel2())],
@@ -55,14 +54,6 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        private static ItemFieldViewModel ToViewModel2(this InventoryFieldDto field) {
-            return new ItemFieldViewModel {
-                Id = field.Id,
-                Type = field.Type,
-                Name = field.Name
-            };
-        }
-
         private static ItemFieldValuesViewModel ToViewModel(this InventoryItemValuesDto itemValues) {
             return new ItemFieldValuesViewModel {
                 Id = itemValues.ItemId,
@@ -75,7 +66,7 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static ItemFieldValuesViewModel ToView(
+        public static ItemFieldValuesViewModel ToViewModel(
             this Item item, 
             ICollection<ItemValue> itemValues) {
             return new ItemFieldValuesViewModel {
@@ -89,7 +80,7 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static ItemFormViewModel ToFormView(
+        public static ItemFormViewModel ToViewModel(
             this Item item, 
             List<Field> fields,
             List<ItemValue> itemValues,
@@ -98,7 +89,7 @@ namespace InventoryManager.Services.Mappers {
                 Id = item.Id,
                 InventoryId = item.InventoryId,
                 CustomId = item.CustomId,
-                Fields = fields.Select(x => x.ToView()).ToList(),
+                Fields = [.. fields.Select(x => x.ToViewModel())],
                 FieldValues = itemValues.ToDictionary(x => x.FieldId, x => x.Value),
                 PagedRequest = pagedRequest
             };
@@ -166,15 +157,6 @@ namespace InventoryManager.Services.Mappers {
                 PageSize = item.PagedRequest.PageSize,
                 SearchText = item.PagedRequest.SearchText
             };
-        }
-
-        public static Item UpdateEntity(this Item item, int sequence, UpdateInventoryItemDto itemDto) {
-            item.CustomId = itemDto.CustomId ?? sequence.ToString();
-            item.ItemValues = [.. itemDto.FieldValues.Select(x => new ItemValue {
-                FieldId = x.Key,
-                Value = x.Value
-            })];
-            return item;
         }
     }
 }

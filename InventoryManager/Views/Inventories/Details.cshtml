@@ -1,8 +1,4 @@
-﻿@using InventoryManager.Models.ViewModels
-@using InventoryManager.Models.ViewModels.Items
-@using InventoryManager.Models.ViewModels.Items.Index
-@using InventoryManager.Models.Entitites.Inventories
-@using InventoryManager.Utilities.Pagination
+﻿@using InventoryManager.Models.ViewModels.Items.Index
 @model ItemsIndexViewModel
 @{
     ViewData["Title"] = $"Inventory page";
@@ -106,3 +102,15 @@
 <script src="~/js/custom-id-parts.js"></script>
 <script src="~/js/custom-fields.js"></script>
 <script src="~/js/discussions.js"></script>
+<script>
+    const itemsTabButton = document.querySelector('button[data-bs-target="#items"]');
+    if (itemsTabButton) {
+        itemsTabButton.addEventListener('shown.bs.tab', () => {
+            htmx.ajax('GET', '@Url.Action("Index", "Items", new { inventoryId = Model.InventoryId })', {
+                target: '#itemsContainer',
+                swap: 'innerHTML',
+                indicator: '#spinner'
+            });
+        });
+    }
+</script>

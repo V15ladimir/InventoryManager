@@ -6,19 +6,19 @@ namespace InventoryManager.Services.Mappers {
 
     public static class InventoryFieldMapper {
 
-        public static InventoryFieldViewModel ToView(this Field field) {
-            return new() {
-                Id = field.Id,
-                Order = field.Order,
-                Name = field.Name,
-                Description = field.Description,
-                Type = field.FieldType,
-                State = field.FieldState
-            };
-        }
-
         public static InventoryFieldDto ToDto(this Field field) {
-            return new() {
+            return new InventoryFieldDto() {
+                Id = field.Id,
+                Order = field.Order,
+                Name = field.Name,
+                Description = field.Description,
+                FieldType = field.FieldType,
+                FieldState = field.FieldState
+            };
+        }
+
+        public static InventoryFieldViewModel ToViewModel(this Field field) {
+            return new InventoryFieldViewModel() {
                 Id = field.Id,
                 Order = field.Order,
                 Name = field.Name,
@@ -28,12 +28,13 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static void UpdateEntity(this Field field, InventoryFieldViewModel fieldDto) {
-            field.Name = fieldDto.Name;
-            field.Description = fieldDto.Description;
-            field.Order = fieldDto.Order;
-            field.FieldState = fieldDto.State;
-            field.FieldType = fieldDto.Type;
+        public static InventoryCustomFieldsViewModel ToFieldsViewModel(
+            this List<InventoryFieldDto> fields,
+            InventoryDto inventory) {
+            return new InventoryCustomFieldsViewModel {
+                InventoryId = inventory.InventoryId,
+                CustomFields = [.. fields.Select(x => x.ToViewModel())]
+            };
         }
 
         public static InventoryFieldViewModel ToViewModel(this InventoryFieldDto field) {
@@ -42,8 +43,16 @@ namespace InventoryManager.Services.Mappers {
                 Order = field.Order,
                 Name = field.Name,
                 Description = field.Description,
-                Type = field.Type,
-                State = field.State
+                Type = field.FieldType,
+                State = field.FieldState
+            };
+        }
+
+        public static ItemFieldViewModel ToViewModel2(this InventoryFieldDto field) {
+            return new ItemFieldViewModel {
+                Id = field.Id,
+                Type = field.FieldType,
+                Name = field.Name
             };
         }
     }

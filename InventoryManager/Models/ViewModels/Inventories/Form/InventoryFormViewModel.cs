@@ -15,7 +15,6 @@ namespace InventoryManager.Models.ViewModels.Inventories.Form {
         public int InventoryId { get; set; }
         public InventoryDetailsViewModel Details { get; set; } = null!;
         public PagedRequest PagedRequest { get; set; } = new();
-
         [ValidateNever]
         public List<InventoryCategoryViewModel> Categories { get; set; } = [];
     }

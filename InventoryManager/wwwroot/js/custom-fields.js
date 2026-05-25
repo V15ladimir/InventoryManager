@@ -19,7 +19,7 @@ async function saveFields() {
     const indicator = document.getElementById('fieldsSaveIndicator');
     if (indicator) {
         indicator.innerHTML = 'Saving...';
-        indicator.className = 'badge bg-warning text-dark';
+        indicator.className = 'badge bg-warning mb-3';
     }
 
     try {
@@ -29,20 +29,20 @@ async function saveFields() {
         });
         if (response.ok && indicator) {
             indicator.innerHTML = 'Saved';
-            indicator.className = 'badge bg-success';
+            indicator.className = 'badge bg-success mb-3';
             setTimeout(() => {
                 indicator.innerHTML = 'Autosave enabled';
-                indicator.className = 'badge bg-secondary';
+                indicator.className = 'badge bg-secondary mb-3';
             }, 2000);
         } else if (response.status === 400) {
             const html = await response.text();
             updateFieldsForm(html);
             if (indicator) {
                 indicator.innerHTML = 'Please fix errors';
-                indicator.className = 'badge bg-danger';
+                indicator.className = 'badge bg-danger mb-3';
                 setTimeout(() => {
                     indicator.innerHTML = 'Autosave enabled';
-                    indicator.className = 'badge bg-secondary';
+                    indicator.className = 'badge bg-secondary mb-3';
                 }, 3000);
             }
         }

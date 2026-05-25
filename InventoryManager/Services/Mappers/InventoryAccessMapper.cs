@@ -1,5 +1,6 @@
 ﻿using InventoryManager.Models.Dto;
 using InventoryManager.Models.Entitites;
+using InventoryManager.Models.Entitites.Inventories;
 using InventoryManager.Models.ViewModels.Inventories.Shared;
 using InventoryManager.Utilities.Pagination;
 
@@ -19,7 +20,24 @@ namespace InventoryManager.Services.Mappers {
             };
         }
 
-        public static InventoryAccessListViewModel ToListViewModel(
+        public static UpdateInventoryAccessDto ToUpdateDto(
+            this InventoryAccessViewModel access,
+            int inventoryId) {
+            return new UpdateInventoryAccessDto {
+                InventoryId = inventoryId,
+                UserId = access.UserId,
+                HasAccess = access.HasAccess
+            };
+        }
+
+        public static InventoryAccess ToEntity(this UpdateInventoryAccessDto access) {
+            return new InventoryAccess {
+                InventoryId = access.InventoryId,
+                UserId = access.UserId ?? string.Empty
+            };
+        }
+
+        public static InventoryAccessListViewModel ToViewModel(
             this PagedList<InventoryAccessDto> access,
             int inventoryId) {
             return new InventoryAccessListViewModel {
@@ -36,8 +54,7 @@ namespace InventoryManager.Services.Mappers {
                 access.TotalCount,
                 access.SortBy,
                 access.SortOrder,
-                access.SearchText
-            );
+                access.SearchText);
         }
 
         private static InventoryAccessViewModel ToViewModel(this InventoryAccessDto access) {

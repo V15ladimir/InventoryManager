@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using InventoryManager.Models.Entitites;
+using InventoryManager.Models.Entitites.Inventories;
 using InventoryManager.Models.Enums;
 using InventoryManager.Models.ViewModels.Inventories.Form;
 using InventoryManager.Models.ViewModels.Inventories.Index;
 using InventoryManager.Models.ViewModels.Inventories.Shared;
+using InventoryManager.Models.ViewModels.Items.Index;
 using InventoryManager.Services;
 using InventoryManager.Services.Extensions;
 using InventoryManager.Services.Mappers;
@@ -40,9 +42,11 @@ namespace InventoryManager.Controllers {
         [HttpGet]
         public async Task<IActionResult> Create(PagedRequest pagedRequest) {
             var categories = await categoryService.GetCategoriesAsync();
-            return View("Create", InventoryMapper.GetInventorySettingsViewModel(
-                categories, 
-                pagedRequest));
+            return View("Create", new InventorySettingsViewModel {
+                Details = new InventoryDetailsViewModel(),
+                Categories = categories.ToViewModel(),
+                PagedRequest = pagedRequest
+            });
         }
 
         [HttpGet]
@@ -52,19 +56,19 @@ namespace InventoryManager.Controllers {
             var parts = await inventoryService.GetInventoryIdPartsAsync(inventoryId);
             var fields = await inventoryService.GetInventoryFieldsAsync(inventoryId);
             var hasSuperAccess = await accessService.CanEditInventoryAsync(inventoryId, userManager.GetUserId(User));
-            return View(inventory.ToItemsIndexViewModel(
-                hasSuperAccess,
-                categories, 
-                parts, 
-                fields, 
-                pagedRequest
-            ));
+            return View(new ItemsIndexViewModel {
+                InventoryId = inventoryId,
+                Settings = inventory.ToViewModel(categories, pagedRequest),
+                Parts = parts.ToViewModel(inventory),
+                Fields = fields.ToFieldsViewModel(inventory),
+                HasSuperAccess = hasSuperAccess
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> SearchAccess(int inventoryId, PagedRequest pagedRequest) {
             var access = await inventoryService.GetInventoryAccessAsync(inventoryId, pagedRequest);
-            return View("Access", access.ToListViewModel(inventoryId));
+            return View("Access", access.ToViewModel(inventoryId));
         }
 
         [HttpPost]
@@ -77,7 +81,7 @@ namespace InventoryManager.Controllers {
                 validation.AddToModelState(this.ModelState);
             if(!ModelState.IsValid)
                 return PartialView("_InventorySettings", settings);
-            await inventoryService.CreateInventoryAsync(settings.Details.ToCreateInventoryDto(userManager.GetUserId(User)));
+            await inventoryService.CreateInventoryAsync(settings.Details.ToCreateDto(userManager.GetUserId(User)));
             Response.Headers.Append("HX-Redirect", Url.Action("Index"));
             return Ok();
         }
@@ -92,7 +96,7 @@ namespace InventoryManager.Controllers {
                 validation.AddToModelState(this.ModelState);
             if(!ModelState.IsValid)
                 return PartialView("_InventorySettings", settings);
-            await inventoryService.UpdateInventoryAsync(settings.Details.ToUpdateInventoryDto(inventoryId, userManager.GetUserId(User)));
+            await inventoryService.UpdateInventoryAsync(settings.Details.ToUpdateDto(inventoryId, userManager.GetUserId(User)));
             return PartialView("_InventorySettings", settings);
         }
 
@@ -126,9 +130,9 @@ namespace InventoryManager.Controllers {
             int inventoryId, 
             InventoryAccessViewModel acces, 
             PagedRequest pagedRequest) {
-            await inventoryService.UpdateInventoryAccessAsync(acces.ToUpdateInventoryAccessDto(inventoryId));
+            await inventoryService.UpdateInventoryAccessAsync(acces.ToUpdateDto(inventoryId));
             var access = await inventoryService.GetInventoryAccessAsync(inventoryId, pagedRequest);
-            return View("Access", access.ToListViewModel(inventoryId));
+            return View("Access", access.ToViewModel(inventoryId));
         }
 
         [HttpPost]

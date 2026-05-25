@@ -10,7 +10,7 @@ namespace InventoryManager.Services {
         Task<InventoryItemValuesDto> GetItemAsync(int itemId);
         Task<string> GetItemCustomIdAsync(int inventoryId);
         Task CreateItemAsync(CreateInventoryItemDto item);
-        Task UpdateItemAsync(UpdateInventoryItemDto model);
+        Task UpdateItemAsync(UpdateInventoryItemDto itemDto);
         Task DeleteItemsAsync(int inventoryId, List<int> selectedIds);
     }
 }

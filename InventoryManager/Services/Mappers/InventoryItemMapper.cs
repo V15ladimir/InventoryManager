@@ -30,7 +30,9 @@ namespace InventoryManager.Services.Mappers {
                     Id = y.Id, 
                     FieldId = y.FieldId, 
                     Value = y.Value 
-                })]
+                })],
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt
             };
         }
 
@@ -61,7 +63,9 @@ namespace InventoryManager.Services.Mappers {
                     Id = x.Id, 
                     FieldId = x.FieldId, 
                     Value = x.Value 
-                })
+                }),
+                CreatedAt = itemValues.CreatedAt,
+                UpdatedAt = itemValues.UpdatedAt
             };
         }
 
@@ -75,7 +79,8 @@ namespace InventoryManager.Services.Mappers {
                     Id = y.Id, 
                     FieldId = y.FieldId,
                     Value = y.Value 
-                })
+                }),
+                CreatedAt = item.CreatedAt
             };
         }
 

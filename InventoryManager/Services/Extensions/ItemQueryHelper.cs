@@ -21,10 +21,19 @@ namespace InventoryManager.Services.Extensions {
             if(string.IsNullOrWhiteSpace(pagedRequest.SortBy)) 
                 return query;
             return pagedRequest.SortBy.ToLower() switch {
+                "customid" => ApplyCustomIdSort(query, pagedRequest),
                 "created" => ApplyCreatedSort(query, pagedRequest),
                 "updated" => ApplyUpdatedSort(query, pagedRequest),
                 _ => query.OrderBy(x => x.CreatedAt)
             };
+        }
+
+        private static IQueryable<Item> ApplyCustomIdSort(
+            IQueryable<Item> query,
+            PagedRequest pagedRequest) {
+            return pagedRequest.SortOrder == "asc" ?
+                query.OrderBy(x => x.CustomId) :
+                query.OrderByDescending(x => x.CustomId);
         }
 
         private static IQueryable<Item> ApplyCreatedSort(

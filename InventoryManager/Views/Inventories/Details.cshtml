@@ -41,16 +41,16 @@
 </ul>
 <div class="tab-content">
     <div class="tab-pane fade show active" id="items">
+        <div id="itemsSpinner" class="htmx-indicator" style="display: none;">
+            <div class="spinner-border text-primary"></div>
+        </div>
         <div id="itemsContainer"
              class="pt-3"
              hx-get="@Url.Action("Index", "Items", new { inventoryId = Model.InventoryId })"
              hx-trigger="load"
              hx-target="this"
              hx-swap="innerHTML"
-             hx-indicator="#spinner">
-            <div id="spinner" class="text-center p-5 htmx-indicator">
-                <div class="spinner-border text-primary"></div>
-            </div>
+             hx-indicator="#itemsSpinner">
         </div>
     </div>
     <div class="tab-pane fade" id="discussions">
@@ -101,16 +101,3 @@
 </div>    
 <script src="~/js/custom-id-parts.js"></script>
 <script src="~/js/custom-fields.js"></script>
-<script src="~/js/discussions.js"></script>
-@* <script>
-    const itemsTabButton = document.querySelector('button[data-bs-target="#items"]');
-    if (itemsTabButton) {
-        itemsTabButton.addEventListener('shown.bs.tab', () => {
-            htmx.ajax('GET', '@Url.Action("Index", "Items", new { inventoryId = Model.InventoryId })', {
-                target: '#itemsContainer',
-                swap: 'innerHTML',
-                indicator: '#spinner'
-            });
-        });
-    }
-</script> *@

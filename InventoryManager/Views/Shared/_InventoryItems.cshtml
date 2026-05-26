@@ -26,7 +26,6 @@
                         </button>
                         <button type="button" class="btn btn-outline-secondary"
                                 hx-delete="@Url.Action("Delete", "Items", new { inventoryId = Model.InventoryId })"
-                                hx-confirm="Delete selected items?"
                                 hx-target="#itemsContainer"
                                 hx-swap="innerHTML"
                                 hx-vals='js:{itemIds: getSelectedIds()}'>
@@ -58,6 +57,14 @@
         </div>
     </div>
     <div class="table-responsive">
+        @{
+            var inventorySortBy = Model.Items.SortBy;
+            var inventorySortOrder = Model.Items.SortOrder;
+            string ChangeSortOrder(string sortBy) => inventorySortBy == sortBy && inventorySortOrder == "asc" ? "desc" : "asc";
+            string GetSortIcon(string sortBy) => inventorySortBy == sortBy ?
+                (inventorySortOrder == "asc" ? "bi bi-chevron-up" : "bi bi-chevron-down") :
+                "bi bi-chevron-expand";
+        }
         <table class="table">
             <thead>
                 <tr>
@@ -73,26 +80,40 @@
                                 hx-target="#itemsContainer"
                                 hx-swap="innerHTML"
                                 hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
-                                hx-vals='js:{sortBy: "CustomId", sortOrder: "@(Model.Items.SortBy == "CustomId" && Model.Items.SortOrder == "asc" ? "desc" : "asc")"}'>
+                                hx-vals='js:{sortBy: "customid", sortOrder: "@ChangeSortOrder("customid")"}'>
                             CustomId
-                            @if(Model.Items.SortBy == "CustomId") {
-                                <i class="bi bi-chevron-@(Model.Items.SortOrder == "asc" ? "up" : "down")"></i>
-                            }
+                            <i class="@(GetSortIcon("customid"))"></i>
                         </button>
                     </th>
                     @foreach(var header in Model.Fields) {
                         <th scope="col">
-                            <button type="button"
-                                    class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
-                                    hx-get="@Url.Action("Index", "Items")"
-                                    hx-target="#itemsContainer"
-                                    hx-swap="innerHTML"
-                                    hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
-                                    hx-vals='js:{sortBy: "CustomId", sortOrder: "@(Model.Items.SortBy == "CustomId" && Model.Items.SortOrder == "asc" ? "desc" : "asc")"}'>
-                                @header.Name
-                            </button>
+                            @header.Name
                         </th>
                     }
+                    <th>
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#itemsContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
+                                hx-vals='js:{sortBy: "created", sortOrder: "@ChangeSortOrder("created")"}'>
+                            Created
+                            <i class="@(GetSortIcon("created"))"></i>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button"
+                                class="btn btn-link text-decoration-none text-dark p-0 m-0 fw-bold"
+                                hx-get="@Url.Action("Index", "Items")"
+                                hx-target="#itemsContainer"
+                                hx-swap="innerHTML"
+                                hx-include="[name='inventoryId'], [name='page'], [name='pageSize'], [name='searchText']"
+                                hx-vals='js:{sortBy: "updated", sortOrder: "@ChangeSortOrder("updated")"}'>
+                            Updated
+                            <i class="@(GetSortIcon("updated"))"></i>
+                        </button>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -135,10 +156,16 @@
                                     }
                                 </td>
                             }
+                            <td>
+                                @item.CreatedAt
+                            </td>
+                            <td>
+                                @item.UpdatedAt
+                            </td>
                         </tr>
                     }
                 } else {
-                    var colspan = Model.Fields.Count() + 1;
+                    var colspan = Model.Fields.Count() + 3;
                     if(User.Identity?.IsAuthenticated ?? false) {
                         colspan++;
                     }
@@ -192,12 +219,14 @@
     </div>
 </div>
 <script>
-    const selectAllCheckbox = document.getElementById('selectAll');
-    selectAllCheckbox?.addEventListener('change', function() {
-        document.querySelectorAll('.item-select').forEach(cb => {
-            cb.checked = selectAllCheckbox.checked;
+    if (!document.querySelector('#selectAll')?.hasAttribute('data-initialized')) {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        selectAllCheckbox?.addEventListener('change', function() {
+            document.querySelectorAll('.item-select').forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
         });
-    });
+    }
 
     function getSelectedId() {
         const selected = Array.from(document.querySelectorAll('.item-select:checked'))

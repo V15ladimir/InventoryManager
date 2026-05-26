@@ -4,6 +4,8 @@
         public int Id { get; set; }
         public string CustomId { get; set; } = string.Empty;
         public IEnumerable<ItemFieldValueViewModel> ItemValues { get; set; } = [];
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
     public class ItemFieldValueViewModel {

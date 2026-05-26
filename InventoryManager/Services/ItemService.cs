@@ -42,32 +42,35 @@ namespace InventoryManager.Services {
         }
 
         public async Task<string> GetItemCustomIdAsync(int inventoryId) {
-            var nextSequence = await GenerateNextSequenceAsync();
+            var nextSequence = await GenerateNextSequenceAsync(inventoryId);
             var idParts = await GenerateIdPartsAsync(inventoryId, nextSequence);
             var customId = idParts.Count > 0 ? string.Concat(idParts) : nextSequence.ToString();
             return customId;
         }
 
         public async Task CreateItemAsync(CreateInventoryItemDto itemDto) {
-            var nextSequence = await GenerateNextSequenceAsync();
+            var nextSequence = await GenerateNextSequenceAsync(itemDto.InventoryId);
             var item = itemDto.ToEntity(nextSequence);
+            item.CreatedAt = DateTime.UtcNow;
             item.SearchText = ItemSearchBuilder.Build(item);
             await context.Items.AddAsync(item);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateItemAsync(UpdateInventoryItemDto itemDto) {
-            var nextSequence = await GenerateNextSequenceAsync();
+            var item = await context.Items.FindAsync(itemDto.ItemId) ??
+                throw new NotFoundException("Item not found");
+            var nextSequence = await GenerateNextSequenceAsync(item.InventoryId);
             var itemValues = await context.ItemValues.Where(x => x.ItemId == itemDto.ItemId)
                 .ToListAsync();
             context.ItemValues.RemoveRange(itemValues);
-            var item = await context.Items.FindAsync(itemDto.ItemId) ?? 
-                throw new NotFoundException("Item not found");
             item.CustomId = itemDto.CustomId ?? nextSequence.ToString();
             item.ItemValues = [.. itemDto.FieldValues.Select(x => new ItemValue {
                 FieldId = x.Key,
                 Value = x.Value
             })];
+            item.UpdatedAt = DateTime.UtcNow;
+            item.SearchText = ItemSearchBuilder.Build(item);
             await context.SaveChangesAsync();
         }
 
@@ -93,8 +96,9 @@ namespace InventoryManager.Services {
                .ToListAsync();
         }
 
-        private async Task<int> GenerateNextSequenceAsync() {
+        private async Task<int> GenerateNextSequenceAsync(int inventoryId) {
             var sequence = await context.Items.AsNoTracking()
+                .Where(x => x.InventoryId == inventoryId)
                 .OrderByDescending(x => x.Sequence)
                 .Select(x => x.Sequence)
                 .FirstOrDefaultAsync();

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using InventoryManager.Validators;
+//using InventoryManager.Integration.Salesforce.Services;
+//using InventoryManager.Integration.Salesforce.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,8 @@ builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.Configure<SalesforceOptions>(builder.Configuration.GetSection("Salesforce"));
+//builder.Services.AddHttpClient<ISalesforceService, SalesforceService>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomFieldsValidator>();
@@ -71,8 +75,29 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-using(var scope = app.Services.CreateScope())
+using(var scope = app.Services.CreateScope()) {
     await scope.ServiceProvider.GetRequiredService<ApplicationDbInitializer>().InitializeAsync(scope.ServiceProvider);
+    //var salesforceService = scope.ServiceProvider.GetRequiredService<ISalesforceService>();
+    //var testModel = new SalesforceExportModel {
+    //    Company = new SalesforceCompanyModel {
+    //        CompanyName = "Test Company 2",
+    //        CompanySite = "Головной офис",
+    //        CompanyType = "Customer",
+    //        CompanyPhone = "+1 (212) 555-1234",
+    //        CompanyWebSite = "https://www.example.com",
+    //        Industry = "Technology"
+    //    },
+    //    Account = new SalesforceAccountModel {
+    //        Title = "Software Engineer",
+    //        FirstName = "Иван",
+    //        LastName = "Иван",
+    //        Email = "ivan@example.com",
+    //        ContactPhone = "+1 (212) 555-1234",
+    //        MobilePhone = "+375291111111"
+    //    }
+    //};
+    //await salesforceService.ExportAsync(testModel);
+}
 
 app.MapRazorPages();
 app.MapStaticAssets();

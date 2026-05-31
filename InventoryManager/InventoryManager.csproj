@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
+    <PackageReference Include="Dropbox.Api" Version="7.0.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.8" />
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="Integration\Odoo\" />
+    <Folder Include="Integration\PowerAutomate\Controllers\" />
   </ItemGroup>
 
 </Project>

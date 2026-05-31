@@ -1,0 +1,100 @@
+﻿@using InventoryManager.Models.ViewModels.Profile
+@model ProfileViewModel
+
+<h2>Welcome, @Model.UserName</h2>
+<div>First Name: @Model.FirstName</div>
+<div>Last Name: @Model.LastName</div>
+<div>Email: @Model.Email</div>
+<h3>Export to Salesforce</h3>
+<form id="salesforceForm">
+    <div>
+        <label>Company Name</label>
+        <input type="text" name="Company.CompanyName" class="form-control" required />
+    </div>
+    <div>
+        <label>Office Location</label>
+        <input type="text" name="Company.CompanySite" class="form-control" />
+    </div>
+    <div>
+        <label>Company Type</label>
+        <select name="Company.CompanyType" class="form-select">
+            <option value="">-- Select --</option>
+            <option value="Customer">Customer</option>
+            <option value="Prospect">Prospect</option>
+            <option value="Partner">Partner</option>
+        </select>
+    </div>
+    <div>
+        <label>Company Phone</label>
+        <input type="tel" name="Company.CompanyPhone" class="form-control" />
+    </div>
+    <div>
+        <label>Website</label>
+        <input type="url" name="Company.CompanyWebSite" class="form-control" />
+    </div>
+    <div>
+        <label>Industry</label>
+        <select name="Company.Industry" class="form-select">
+            <option value="Technology">Technology / Software</option>
+            <option value="Banking">Banking</option>
+            <option value="Education">Education</option>
+        </select>
+    </div>
+    <div>
+        <label>Job Title</label>
+        <input type="text" name="Account.Title" class="form-control" />
+    </div>
+    <div>
+        <label>Work Phone</label>
+        <input type="tel" name="Account.ContactPhone" class="form-control" />
+    </div>
+    <div>
+        <label>Mobile Phone</label>
+        <input type="tel" name="Account.MobilePhone" class="form-control" />
+    </div>
+    <div id="message"></div>
+    <button type="submit" class="btn btn-primary">Export to Salesforce</button>
+</form>
+<script>
+    const form = document.getElementById('salesforceForm');
+    const messageDiv = document.getElementById('message');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = {
+            company: {
+                companyName: formData.get('Company.CompanyName'),
+                companySite: formData.get('Company.CompanySite'),
+                companyType: formData.get('Company.CompanyType'),
+                companyPhone: formData.get('Company.CompanyPhone'),
+                companyWebSite: formData.get('Company.CompanyWebSite'),
+                industry: formData.get('Company.Industry')
+            },
+            account: {
+                firstName: '@Model.FirstName',
+                lastName: '@Model.LastName',
+                email: '@Model.Email',
+                title: formData.get('Account.Title'),
+                contactPhone: formData.get('Account.ContactPhone'),
+                mobilePhone: formData.get('Account.MobilePhone')
+            }
+        };
+        
+        try {
+            const response = await fetch('/api/salesforce/export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                messageDiv.innerHTML = `Success`;
+                form.reset();
+            } else {
+                messageDiv.innerHTML = `Error: ${response.status} ${response.statusText}`;
+            }
+        } catch (error) {
+            messageDiv.innerHTML = `❌ Network error: ${error.message}`;
+        }
+    });
+</script>

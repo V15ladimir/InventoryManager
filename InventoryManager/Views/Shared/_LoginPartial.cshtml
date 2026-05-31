@@ -10,6 +10,9 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
+                <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+            </li>
+            <li>
                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
                     <button type="submit" class="dropdown-item">Logout</button>
                 </form>

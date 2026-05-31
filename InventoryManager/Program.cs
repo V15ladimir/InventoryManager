@@ -1,13 +1,17 @@
+using System.Net.Sockets;
+using FluentValidation;
 using InventoryManager.Data;
 using InventoryManager.Hubs;
+using InventoryManager.Integration.PowerAutomate.Models;
+using InventoryManager.Integration.PowerAutomate.Services;
+using InventoryManager.Integration.Salesforce.Models;
+using InventoryManager.Integration.Salesforce.Services;
 using InventoryManager.Models.Entitites;
 using InventoryManager.Services;
+using InventoryManager.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using FluentValidation;
-using InventoryManager.Validators;
-//using InventoryManager.Integration.Salesforce.Services;
-//using InventoryManager.Integration.Salesforce.Models;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +59,9 @@ builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.Configure<SalesforceOptions>(builder.Configuration.GetSection("Salesforce"));
-//builder.Services.AddHttpClient<ISalesforceService, SalesforceService>();
+builder.Services.AddHttpClient<ISalesforceService, SalesforceService>();
+//builder.Services.Configure<DropboxOptions>(builder.Configuration.GetSection("Dropbox"));
+builder.Services.AddScoped<IDropBoxService, DropboxService>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomFieldsValidator>();
@@ -97,6 +103,17 @@ using(var scope = app.Services.CreateScope()) {
     //    }
     //};
     //await salesforceService.ExportAsync(testModel);
+    //var test = new {
+    //    Subject = "test",
+    //    Priority = "test",
+    //    ReportedBy = "Anonymous",
+    //    Inventory = "N/A",
+    //    Link = "https://api.nuget.org"
+    //};
+    //var service = scope.ServiceProvider.GetRequiredService<IDropBoxService>();
+    //var jsonString = JsonConvert.SerializeObject(test, Formatting.Indented);
+    //var fileName = $"SupportTicket_{Guid.NewGuid()}.json";
+    //await service.UploadFileAsync(jsonString, fileName);
 }
 
 app.MapRazorPages();

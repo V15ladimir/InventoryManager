@@ -2,6 +2,7 @@
 @model ItemsIndexViewModel
 @{
     ViewData["Title"] = $"Inventory page";
+    ViewBag.InventoryName = Model.InventoryName;
 }
 
 <input type="hidden" name="Id" value="@Model.InventoryId" />

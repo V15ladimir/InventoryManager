@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="Integration\Odoo\" />
-    <Folder Include="Integration\PowerAutomate\Controllers\" />
   </ItemGroup>
 
 </Project>

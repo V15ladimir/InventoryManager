@@ -1,10 +1,16 @@
 ﻿@using InventoryManager.Models.Enums
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    var currentUrl = Context.Request.GetDisplayUrl();
+    var inventoryName = ViewBag.InventoryName;
+}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>@ViewData["Title"] - InventoryManager</title>
+        <title>InventoryManager</title>
         <script type="importmap"></script>
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -70,7 +76,8 @@
                                 </li>
                             }
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Support" asp-action="Index">Help</a>
+                                <a class="nav-link text-dark" asp-controller="Support" asp-action="Index" asp-route-link="@currentUrl" 
+                                    asp-route-inventory="@inventoryName" >Help</a>
                             </li>
 			            </ul>
                         <ul class="navbar-nav ms-auto">

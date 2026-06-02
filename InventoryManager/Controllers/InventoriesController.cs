@@ -55,6 +55,7 @@ namespace InventoryManager.Controllers {
             var hasSuperAccess = await accessService.CanEditInventoryAsync(inventoryId, userManager.GetUserId(User));
             return View(new ItemsIndexViewModel {
                 InventoryId = inventoryId,
+                InventoryName = inventory.InventoryName,
                 Settings = inventory.ToViewModel(categories, pagedRequest),
                 Parts = parts.ToViewModel(inventoryId),
                 Fields = fields.ToFieldsViewModel(inventoryId),

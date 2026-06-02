@@ -150,7 +150,7 @@
                                 var displayValue = value?.Value ?? "-";
                                 <td>
                                     @if(field.Type == FieldType.Link && !string.IsNullOrWhiteSpace(value?.Value)) {
-                                        <a href="@value.Value" target="_blank">@value.Value</a>
+                                        <a href="@value.Value" target="_blank">Link</a>
                                     } else {
                                         @displayValue
                                     }

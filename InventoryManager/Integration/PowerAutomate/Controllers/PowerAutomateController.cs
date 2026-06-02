@@ -1,5 +1,6 @@
 ﻿using InventoryManager.Integration.PowerAutomate.Models;
 using InventoryManager.Integration.PowerAutomate.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -7,6 +8,7 @@ namespace InventoryManager.Integration.PowerAutomate.Controllers {
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PowerAutomateController(IDropBoxService dropBoxService) : ControllerBase {
 
         [HttpPost("create")]

@@ -1,59 +1,75 @@
 ﻿@using InventoryManager.Models.ViewModels.Profile
 @model ProfileViewModel
 
-<h2>Welcome, @Model.UserName</h2>
-<div>First Name: @Model.FirstName</div>
-<div>Last Name: @Model.LastName</div>
-<div>Email: @Model.Email</div>
-<h3>Export to Salesforce</h3>
-<form id="salesforceForm">
-    <div>
-        <label>Company Name</label>
-        <input type="text" name="Company.CompanyName" class="form-control" required />
-    </div>
-    <div>
-        <label>Office Location</label>
-        <input type="text" name="Company.CompanySite" class="form-control" />
-    </div>
-    <div>
-        <label>Company Type</label>
-        <select name="Company.CompanyType" class="form-select">
-            <option value="Customer">Customer</option>
-            <option value="Prospect">Prospect</option>
-            <option value="Partner">Partner</option>
-        </select>
-    </div>
-    <div>
-        <label>Company Phone</label>
-        <input type="tel" name="Company.CompanyPhone" class="form-control" />
-    </div>
-    <div>
-        <label>Website</label>
-        <input type="url" name="Company.CompanyWebSite" class="form-control" />
-    </div>
-    <div>
-        <label>Industry</label>
-        <select name="Company.Industry" class="form-select">
-            <option value="Technology">Technology / Software</option>
-            <option value="Banking">Banking</option>
-            <option value="Education">Education</option>
-        </select>
-    </div>
-    <div>
-        <label>Job Title</label>
-        <input type="text" name="Account.Title" class="form-control" />
-    </div>
-    <div>
-        <label>Work Phone</label>
-        <input type="tel" name="Account.ContactPhone" class="form-control" />
-    </div>
-    <div>
-        <label>Mobile Phone</label>
-        <input type="tel" name="Account.MobilePhone" class="form-control" />
-    </div>
-    <div id="message"></div>
-    <button type="submit" class="btn btn-primary">Export to Salesforce</button>
-</form>
+<div class="container mt-5">
+    <section class="mb-3">
+        <h2>Welcome, @Model.UserName</h2>
+        <div>First Name: @Model.FirstName</div>
+        <div>Last Name: @Model.LastName</div>
+        <div>Email: @Model.Email</div>
+    </section>
+    <section>
+        <h3>Export to Salesforce</h3>
+        <form id="salesforceForm">
+            <div class="mb-3">
+                <label>Company Name <span class="text-danger">*</span></label>
+                <input type="text" name="Company.CompanyName" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label>Office Location</label>
+                <input type="text" name="Company.CompanySite" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Company Type</label>
+                <select name="Company.CompanyType" class="form-select">
+                    <option value="Customer">Customer</option>
+                    <option value="Prospect">Prospect</option>
+                    <option value="Partner">Partner</option>
+                    <option value="Competitor">Competitor</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Company Phone</label>
+                <input type="tel" name="Company.CompanyPhone" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Website</label>
+                <input type="url" name="Company.CompanyWebSite" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Industry</label>
+                <select name="Company.Industry" class="form-select">
+                    <option value="Technology">Technology / Software</option>
+                    <option value="Banking">Banking / Financial Services</option>
+                    <option value="Education">Education</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Telecommunications">Telecommunications</option>
+                    <option value="Transportation">Transportation</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Job Title</label>
+                <input type="text" name="Account.Title" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Work Phone</label>
+                <input type="tel" name="Account.ContactPhone" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label>Mobile Phone</label>
+                <input type="tel" name="Account.MobilePhone" class="form-control" />
+            </div>
+            <div id="message" class="mb-3"></div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Export</button>
+                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </section>
+</div>
 <script>
     const form = document.getElementById('salesforceForm');
     const messageDiv = document.getElementById('message');
@@ -78,21 +94,21 @@
                 mobilePhone: formData.get('Account.MobilePhone')
             }
         };
-        
         try {
             const response = await fetch('/api/salesforce/export', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-            
             if (response.ok) {
-                messageDiv.innerHTML = `Success`;
+                messageDiv.innerHTML = '<div class="alert alert-success">Exported to Salesforce! Redirecting...</div>';
+                form.reset();
+                setTimeout(() => window.history.back(), 1500);
             } else {
-                messageDiv.innerHTML = `Error: ${response.status} ${response.statusText}`;
+               messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${response.status}</div>`;
             }
         } catch (error) {
-            messageDiv.innerHTML = `Network error: ${error.message}`;
+            messageDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
         }
     });
 </script>

@@ -13,7 +13,7 @@ using NpgsqlTypes;
 namespace InventoryManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260521195332_InitialCreate")]
+    [Migration("20260602210401_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

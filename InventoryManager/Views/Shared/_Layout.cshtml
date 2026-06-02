@@ -75,11 +75,13 @@
                                     </ul>
                                 </li>
                             }
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Support" asp-action="Index" asp-route-link="@currentUrl" 
-                                    asp-route-inventory="@inventoryName" >Help</a>
-                            </li>
-			            </ul>
+                            @if(User.Identity?.IsAuthenticated ?? false) {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Support" asp-action="Index" asp-route-link="@currentUrl" 
+                                        asp-route-inventory="@inventoryName" >Help</a>
+                                </li>
+                            }
+                        </ul>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
                                 <form asp-controller="Search" asp-action="Index" method="get" class="d-flex">

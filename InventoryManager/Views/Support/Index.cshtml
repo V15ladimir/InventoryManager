@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h4 class="mb-3">Create Support Ticket</h4>
+            <h4 class="mb-3">Create support ticket</h4>
             <form id="supportForm">
                 @Html.AntiForgeryToken()
 
@@ -15,7 +15,7 @@
                 <input type="hidden" id="Inventory" name="Inventory" value="@Model.Inventory" />
                 <input type="hidden" id="Link" name="Link" value="@Model.Link" />
                 <div class="mb-3">
-                    <label for="Subject" class="form-label">Subject</label>
+                    <label for="Subject" class="form-label">Subject <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="Subject" name="Subject" required />
                 </div>
                 <div class="mb-3">
@@ -27,8 +27,10 @@
                     </select>
                 </div>
                 <div id="message" class="mb-3"></div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+                </div>
             </form>
         </div>
     </div>

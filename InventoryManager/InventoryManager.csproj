@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Integration\Odoo\**" />
     <Compile Remove="Models\Entitites\CustomIdentifier\**" />
+    <Content Remove="Integration\Odoo\**" />
     <Content Remove="Models\Entitites\CustomIdentifier\**" />
+    <EmbeddedResource Remove="Integration\Odoo\**" />
     <EmbeddedResource Remove="Models\Entitites\CustomIdentifier\**" />
+    <None Remove="Integration\Odoo\**" />
     <None Remove="Models\Entitites\CustomIdentifier\**" />
   </ItemGroup>
 
@@ -27,10 +31,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Integration\Odoo\" />
   </ItemGroup>
 
 </Project>

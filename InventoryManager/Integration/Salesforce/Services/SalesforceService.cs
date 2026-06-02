@@ -10,7 +10,6 @@ namespace InventoryManager.Integration.Salesforce.Services {
 
         public async Task ExportAsync(SalesforceExportModel export) {
             var auth = await AutheticateAsync();
-
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
             var compositeRequest = new {
                 compositeRequest = new[] {
@@ -18,13 +17,12 @@ namespace InventoryManager.Integration.Salesforce.Services {
                     CreateAccount(export.Account)
                 }
             };
-
             var response = await httpClient.PostAsJsonAsync($"{auth.InstanceUrl}/services/data/{options.Value.ApiVersion}/composite", compositeRequest);
             response.EnsureSuccessStatusCode();
         }
 
-        private CompositeItemRequest CreateCompany(SalesforceCompanyModel company) {
-            return new CompositeItemRequest {
+        private static object CreateCompany(SalesforceCompanyModel company) {
+            return new {
                 Method = "POST",
                 Url = "/services/data/v66.0/sobjects/Account",
                 ReferenceId = "newAccount",
@@ -39,8 +37,8 @@ namespace InventoryManager.Integration.Salesforce.Services {
             };
         }
 
-        private CompositeItemRequest CreateAccount(SalesforceAccountModel account) {
-            return new CompositeItemRequest {
+        private static object CreateAccount(SalesforceAccountModel account) {
+            return new {
                 Method = "POST",
                 Url = "/services/data/v66.0/sobjects/Contact",
                 ReferenceId = "newContact",
@@ -51,7 +49,7 @@ namespace InventoryManager.Integration.Salesforce.Services {
                     account.Email,
                     Phone = account.ContactPhone,
                     account.MobilePhone,
-                    AccountId = "{newAccount.id}"
+                    AccountId = "@{newAccount.id}"
                 }
             };
         }

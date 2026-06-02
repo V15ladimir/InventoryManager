@@ -1,11 +1,13 @@
 ﻿using InventoryManager.Integration.Salesforce.Models;
 using InventoryManager.Integration.Salesforce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManager.Integration.Salesforce.Controllers {
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SalesforceController(ISalesforceService salesforceService) : ControllerBase {
 
         [HttpPost("export")]

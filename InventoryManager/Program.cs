@@ -60,7 +60,7 @@ builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
 //builder.Services.Configure<SalesforceOptions>(builder.Configuration.GetSection("Salesforce"));
 builder.Services.AddHttpClient<ISalesforceService, SalesforceService>();
-//builder.Services.Configure<DropboxOptions>(builder.Configuration.GetSection("Dropbox"));
+builder.Services.Configure<DropboxOptions>(builder.Configuration.GetSection("Dropbox"));
 builder.Services.AddScoped<IDropBoxService, DropboxService>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventorySettingsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<InventoryCustomIdPartsValidator>();

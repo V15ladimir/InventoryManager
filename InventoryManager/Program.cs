@@ -58,7 +58,7 @@ builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IDiscussionService, DiscussionService>();
 builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
-//builder.Services.Configure<SalesforceOptions>(builder.Configuration.GetSection("Salesforce"));
+builder.Services.Configure<SalesforceOptions>(builder.Configuration.GetSection("Salesforce"));
 builder.Services.AddHttpClient<ISalesforceService, SalesforceService>();
 builder.Services.Configure<DropboxOptions>(builder.Configuration.GetSection("Dropbox"));
 builder.Services.AddScoped<IDropBoxService, DropboxService>();

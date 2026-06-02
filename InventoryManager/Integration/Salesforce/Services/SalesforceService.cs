@@ -51,7 +51,7 @@ namespace InventoryManager.Integration.Salesforce.Services {
                     account.Email,
                     Phone = account.ContactPhone,
                     account.MobilePhone,
-                    AccountId = "@{newAccount.id}"
+                    AccountId = "{newAccount.id}"
                 }
             };
         }
